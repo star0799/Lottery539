@@ -23,7 +23,7 @@ namespace Lottery539
         {
             try
             {
-               
+                GetData();
             }
             catch (Exception ex)
             {
@@ -58,40 +58,50 @@ namespace Lottery539
                 log.WriteLog("ReSearch，重新搜尋錯誤。" + ex.Message);
             }
         }
-        public void GetData(int year)
-        {
-            int TeamsCount = default;
-            int dynamicIndex = 2;
-            int Years, Level, TotalGames, WinGames, LoseGames, TieGames, WinBall, LoseBall;
-            string TeamName;
-            string SubtractBall;
-            string XPath = ConfigurationManager.AppSettings["XPath"] ?? "//*[@id='liveresults-sports-immersive__league-fullpage']/div/div[2]/div[2]/div/div/div/div[3]/div/div/div/div[2]/div/div/div/div/div/div/div[2]/div";
-            int Element = Convert.ToInt16(ConfigurationManager.AppSettings["Element"] ?? "2");
+        public void GetData()
+        {           
             try
             {
-                //*[@id="liveresults-sports-immersive__league-fullpage"]/div/div[2]/div[2]/div/div/div/div[3]/div/div/div/div[2]/div/div/div/div/div/div/div[2]/div/div[2]/div/table/tbody/tr[1]
-                wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath(XPath + "/div[" + dynamicIndex + "]/div/table/tbody/tr[1]")));
-                //TeamsCount = driver.FindElements(By.XPath($"//*[@id='liveresults-sports-immersive__league-fullpage']/div/div[2]/div[2]/div/div/div/div[3]/div/div/div/div[2]/div/div/div/div/div/div[" + dynamicIndex + "]/ div/table/tbody/tr")).Count;
-                TeamsCount = driver.FindElements(By.XPath(XPath + "/div[" + dynamicIndex + "]/div/table/tbody/tr")).Count;
-                if (TeamsCount == 0)
+                string userId = ConfigurationManager.AppSettings["UserId"].ToString();
+                string userPwd = ConfigurationManager.AppSettings["UserPwd"].ToString();
+                int dayRange = Convert.ToInt32(ConfigurationManager.AppSettings["DayRange"]);
+                string startDate = DateTime.Now.AddDays(dayRange).ToString("yyyy-MM-dd");
+                string endDate = DateTime.Now.ToString("yyyy-MM-dd");
+                string lotteryUrl = ConfigurationManager.AppSettings["LotteryUrl"].ToString() ?? "http://lotto.arclink.com.tw/";
+                driver.Navigate().GoToUrl(lotteryUrl);
+                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+                driver.SwitchTo().Frame("dynamicInfo");
+                driver.FindElement(By.Name("userName")).SendKeys(userId);
+                driver.FindElement(By.Name("password")).SendKeys(userPwd);
+                IWebElement loginBtn = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath($"/html/body/div/form/table/tbody/tr/td[3]/input")));
+                Thread.Sleep(2000);
+                loginBtn.Click();
+
+                //IWebElement b = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath($"//*[@id='mt']/div[7]/a")));
+                //b.Click();
+
+
+                //driver.FindElement(By.XPath($"/html/body/div/form/table/tbody/tr/td[3]/input")).Click();
+                driver.Navigate().GoToUrl("http://lotto.arclink.com.tw/Lotto39FenBu.html");
+                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+                ////*[@id="mt"]/div[7]/a
+                int IssueCount = driver.FindElements(By.XPath($"/html/body/table[3]/tbody/tr")).Count;
+
+                if (IssueCount == 0)
                 {
-                    dynamicIndex++;
-                    TeamsCount = driver.FindElements(By.XPath($"//*[@id='liveresults-sports-immersive__league-fullpage']/div/div[2]/div[2]/div/div/div/div[3]/div/div/div/div[2]/div/div/div/div/div/div[" + dynamicIndex + "]/ div/table/tbody/tr")).Count;
+                    Thread.Sleep(5000);
                 }
-                for (int i = Element; i < TeamsCount + 1; i++)
-                {
-                    Years = year;
-                    Level = Convert.ToInt32(driver.FindElement(By.XPath(XPath + "/div[" + dynamicIndex + "]/div/table/tbody/tr[" + i + "]/td[2]/div[2]")).Text);
-                    TeamName = driver.FindElement(By.XPath(XPath + "/div[" + dynamicIndex + "]/div/table/tbody/tr[" + i + "]/td[3]/div/div/span")).Text;
-                    TotalGames = Convert.ToInt32(driver.FindElement(By.XPath(XPath + "/div[" + dynamicIndex + "]/div/table/tbody/tr[" + i + "]/td[4]")).Text);
-                    WinGames = Convert.ToInt32(driver.FindElement(By.XPath(XPath + "/div[" + dynamicIndex + "]/div/table/tbody/tr[" + i + "]/td[5]")).Text);
-                    TieGames = Convert.ToInt32(driver.FindElement(By.XPath(XPath + "/div[" + dynamicIndex + "]/div/table/tbody/tr[" + i + "]/td[6]")).Text);
-                    LoseGames = Convert.ToInt32(driver.FindElement(By.XPath(XPath + "/div[" + dynamicIndex + "]/div/table/tbody/tr[" + i + "]/td[7]")).Text);
-                    WinBall = Convert.ToInt32(driver.FindElement(By.XPath(XPath + "/div[" + dynamicIndex + "]/div/table/tbody/tr[" + i + "]/td[8]")).Text);
-                    LoseBall = Convert.ToInt32(driver.FindElement(By.XPath(XPath + "/div[" + dynamicIndex + "]/div/table/tbody/tr[" + i + "]/td[9]")).Text);
-                    SubtractBall = driver.FindElement(By.XPath(XPath + "/div[" + dynamicIndex + "]/div/table/tbody/tr[" + i + "]/td[10]")).Text.ToString();
-                    //ListLottery539Teams.Add(new Lottery539Teams { Years = Years, Level = Level, TeamName = TeamName, TotalGames = TotalGames, WinGames = WinGames, TieGames = TieGames, LoseGames = LoseGames, WinBall = WinBall, LoseBall = LoseBall, SubtractBall = SubtractBall });
-                }
+                IssueCount = IssueCount - 2;
+                string finalIssue = driver.FindElement(By.XPath($"/html/body/table[3]/tbody/tr[{IssueCount}]/td[1]/div")).Text;
+                Thread.Sleep(2000);
+                string dowpdownStartName = "periods1";
+                //按下下拉選單
+                IWebElement dowpdownStartDate = wait.Until(ExpectedConditions.ElementToBeClickable(By.Id(dowpdownStartName)));
+                dowpdownStartDate.Click();
+                //找出所有g-menu-item
+                //var itemCount = driver.FindElements(By.XPath($".//*[@id='{dowpdownStartName}']/option"));
+
+                var a = "";
             }
             catch (Exception ex)
             {
