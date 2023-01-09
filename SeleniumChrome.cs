@@ -19,6 +19,7 @@ namespace Lottery539
         IWebDriver driver = new ChromeDriver();
         WriteFile writeFile = new WriteFile();
         log log = new log();
+        List<LotteryData> lotteryDataList = new List<LotteryData>();
         public void LoadData()
         {
             try
@@ -65,6 +66,7 @@ namespace Lottery539
                 string userId = ConfigurationManager.AppSettings["UserId"].ToString();
                 string userPwd = ConfigurationManager.AppSettings["UserPwd"].ToString();
                 int dayRange = Convert.ToInt32(ConfigurationManager.AppSettings["DayRange"]);
+                int Issue1 = Convert.ToInt32(ConfigurationManager.AppSettings["Issue1"]);
                 string startDate = DateTime.Now.AddDays(dayRange).ToString("yyyy-MM-dd");
                 string endDate = DateTime.Now.ToString("yyyy-MM-dd");
                 string lotteryUrl = ConfigurationManager.AppSettings["LotteryUrl"].ToString() ?? "http://lotto.arclink.com.tw/";
@@ -82,7 +84,7 @@ namespace Lottery539
 
 
                 //driver.FindElement(By.XPath($"/html/body/div/form/table/tbody/tr/td[3]/input")).Click();
-                driver.Navigate().GoToUrl("http://lotto.arclink.com.tw/Lotto39FenBu.html");
+                driver.Navigate().GoToUrl("http://lotto.arclink.com.tw/Lotto39List.html");
                 wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
                 ////*[@id="mt"]/div[7]/a
                 int IssueCount = driver.FindElements(By.XPath($"/html/body/table[3]/tbody/tr")).Count;
@@ -92,16 +94,40 @@ namespace Lottery539
                     Thread.Sleep(5000);
                 }
                 IssueCount = IssueCount - 2;
-                string finalIssue = driver.FindElement(By.XPath($"/html/body/table[3]/tbody/tr[{IssueCount}]/td[1]/div")).Text;
-                Thread.Sleep(2000);
+                string finalIssue = driver.FindElement(By.XPath($"/html/body/table[3]/tbody/tr[{IssueCount}]/td[1]")).Text;
                 string dowpdownStartName = "periods1";
-                //按下下拉選單
                 IWebElement dowpdownStartDate = wait.Until(ExpectedConditions.ElementToBeClickable(By.Id(dowpdownStartName)));
-                dowpdownStartDate.Click();
+                //dowpdownStartDate.Click();
+
                 //找出所有g-menu-item
                 //var itemCount = driver.FindElements(By.XPath($".//*[@id='{dowpdownStartName}']/option"));
+                var selectElement = new SelectElement(dowpdownStartDate);
+                try
+                {
+                    selectElement.SelectByText(startDate);
+                }
+                catch(Exception ex)
+                {
+                    startDate = DateTime.Now.AddDays(dayRange-1).ToString("yyyy-MM-dd");
+                    selectElement.SelectByText(startDate);
+                }
+                //driver.FindElement(By.XPath($"//*[@id='periods1']/option[1]")).Text
+                //driver.FindElement(By.Name("Submit")).Click();
+                //經常沒辦法改時間，改用while持續找到指定日期為止
+                while (selectElement.SelectedOption.Text!= startDate)
+                {
+                    selectElement.SelectByText(startDate);
+                }
+                wait.Until(ExpectedConditions.ElementToBeClickable(By.Name("Submit"))).Click();
 
-                var a = "";
+                for (int i= 0; i <Issue1; i++)
+                {
+                    LotteryData lotteryData = new LotteryData();
+                    lotteryData.Issue = driver.FindElement(By.XPath($"/html/body/table[3]/tbody/tr[{i+3}]/td[1]")).Text;
+                    lotteryData.LotteryDate = driver.FindElement(By.XPath($"/html/body/table[3]/tbody/tr[{i + 3}]/td[2]")).Text;
+                    lotteryData.Numbers = driver.FindElement(By.XPath($"/html/body/table[3]/tbody/tr[{i + 3}]/td[3]")).Text;
+                    lotteryDataList.Add(lotteryData);
+                }
             }
             catch (Exception ex)
             {
