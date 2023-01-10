@@ -58,6 +58,7 @@
             this.btnQuery.TabIndex = 14;
             this.btnQuery.Text = "查詢";
             this.btnQuery.UseVisualStyleBackColor = true;
+            this.btnQuery.Click += new System.EventHandler(this.btnQuery_Click);
             // 
             // lvShow
             // 

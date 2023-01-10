@@ -23,8 +23,13 @@ namespace Lottery539
         public void LoadData()
         {
             try
-            {
-                GetData();
+            {                
+                while (lotteryDataList.Count == 0)
+                {
+                    GetData();
+                }
+                WriteFile writeFile = new WriteFile();
+                writeFile.WriteData(lotteryDataList);
             }
             catch (Exception ex)
             {
@@ -33,30 +38,6 @@ namespace Lottery539
             finally
             {
                 driver.Quit();
-            }
-        }
-        //重新到google頁面搜尋
-        public void ReSearch(string country)
-        {
-            try
-            {
-                IWebElement GetSearchBar;
-                IWebElement SearchSubmit;
-                IWebElement RecordSubmit;
-                string GoogleUrl = ConfigurationManager.AppSettings["GoogleUrl"].ToString() ?? "http://google.com";
-                driver.Navigate().GoToUrl(GoogleUrl);
-                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-                GetSearchBar = wait.Until(ExpectedConditions.ElementToBeClickable(By.Name("q")));
-                GetSearchBar.SendKeys(country.ToString());
-                SearchSubmit = wait.Until(ExpectedConditions.ElementToBeClickable(By.Name("btnK")));
-                SearchSubmit.Click();
-                //按下戰績
-                RecordSubmit = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath($"//*[@id='sports-app']/div/div[2]/div/div/div/ol/li[3]")));
-                RecordSubmit.Click();
-            }
-            catch (Exception ex)
-            {
-                log.WriteLog("ReSearch，重新搜尋錯誤。" + ex.Message);
             }
         }
         public void GetData()
@@ -79,45 +60,58 @@ namespace Lottery539
                 Thread.Sleep(2000);
                 loginBtn.Click();
 
-                //IWebElement b = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath($"//*[@id='mt']/div[7]/a")));
-                //b.Click();
-
-
                 //driver.FindElement(By.XPath($"/html/body/div/form/table/tbody/tr/td[3]/input")).Click();
                 driver.Navigate().GoToUrl("http://lotto.arclink.com.tw/Lotto39List.html");
                 wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-                ////*[@id="mt"]/div[7]/a
+
+                log.WriteLog("001");
+
                 int IssueCount = driver.FindElements(By.XPath($"/html/body/table[3]/tbody/tr")).Count;
+
+                log.WriteLog("002");
 
                 if (IssueCount == 0)
                 {
+                    log.WriteLog("003");
                     Thread.Sleep(5000);
                 }
+                log.WriteLog("004");
                 IssueCount = IssueCount - 2;
+                log.WriteLog("005");
                 string finalIssue = driver.FindElement(By.XPath($"/html/body/table[3]/tbody/tr[{IssueCount}]/td[1]")).Text;
+                log.WriteLog("006");
                 string dowpdownStartName = "periods1";
+                log.WriteLog("007");
                 IWebElement dowpdownStartDate = wait.Until(ExpectedConditions.ElementToBeClickable(By.Id(dowpdownStartName)));
+                log.WriteLog("111");
                 //dowpdownStartDate.Click();
 
                 //找出所有g-menu-item
                 //var itemCount = driver.FindElements(By.XPath($".//*[@id='{dowpdownStartName}']/option"));
                 var selectElement = new SelectElement(dowpdownStartDate);
+                log.WriteLog("222");
                 try
                 {
                     selectElement.SelectByText(startDate);
+                    log.WriteLog("333");
                 }
                 catch(Exception ex)
                 {
                     startDate = DateTime.Now.AddDays(dayRange-1).ToString("yyyy-MM-dd");
+                    log.WriteLog("444");
                     selectElement.SelectByText(startDate);
+                    log.WriteLog("555");
                 }
                 //driver.FindElement(By.XPath($"//*[@id='periods1']/option[1]")).Text
                 //driver.FindElement(By.Name("Submit")).Click();
+                log.WriteLog("666");
                 //經常沒辦法改時間，改用while持續找到指定日期為止
                 while (selectElement.SelectedOption.Text!= startDate)
                 {
+                    log.WriteLog("777");
                     selectElement.SelectByText(startDate);
                 }
+                log.WriteLog("888");
                 wait.Until(ExpectedConditions.ElementToBeClickable(By.Name("Submit"))).Click();
 
                 for (int i= 0; i <Issue1; i++)
