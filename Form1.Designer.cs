@@ -38,7 +38,7 @@
             // 
             this.btnUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnUpdate.Font = new System.Drawing.Font("新細明體", 8F);
-            this.btnUpdate.Location = new System.Drawing.Point(918, 536);
+            this.btnUpdate.Location = new System.Drawing.Point(1175, 535);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
             this.btnUpdate.Size = new System.Drawing.Size(65, 26);
@@ -51,7 +51,7 @@
             // 
             this.btnQuery.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnQuery.Font = new System.Drawing.Font("新細明體", 12F);
-            this.btnQuery.Location = new System.Drawing.Point(1021, 552);
+            this.btnQuery.Location = new System.Drawing.Point(1259, 571);
             this.btnQuery.Name = "btnQuery";
             this.btnQuery.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
             this.btnQuery.Size = new System.Drawing.Size(92, 32);
@@ -67,7 +67,7 @@
             this.lvShow.HideSelection = false;
             this.lvShow.Location = new System.Drawing.Point(0, 0);
             this.lvShow.Name = "lvShow";
-            this.lvShow.Size = new System.Drawing.Size(1125, 363);
+            this.lvShow.Size = new System.Drawing.Size(1363, 363);
             this.lvShow.TabIndex = 16;
             this.lvShow.UseCompatibleStateImageBehavior = false;
             // 
@@ -78,7 +78,7 @@
             this.lvStatistics.HideSelection = false;
             this.lvStatistics.Location = new System.Drawing.Point(0, 363);
             this.lvStatistics.Name = "lvStatistics";
-            this.lvStatistics.Size = new System.Drawing.Size(869, 264);
+            this.lvStatistics.Size = new System.Drawing.Size(1169, 264);
             this.lvStatistics.TabIndex = 17;
             this.lvStatistics.UseCompatibleStateImageBehavior = false;
             // 
@@ -86,7 +86,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1125, 627);
+            this.ClientSize = new System.Drawing.Size(1363, 627);
             this.Controls.Add(this.lvStatistics);
             this.Controls.Add(this.lvShow);
             this.Controls.Add(this.btnQuery);

@@ -60,16 +60,13 @@ namespace Lottery539
                 Thread.Sleep(2000);
                 loginBtn.Click();
 
+                Thread.Sleep(2000);
                 //driver.FindElement(By.XPath($"/html/body/div/form/table/tbody/tr/td[3]/input")).Click();
                 driver.Navigate().GoToUrl("http://lotto.arclink.com.tw/Lotto39List.html");
+                Thread.Sleep(2000);
                 wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
 
-                log.WriteLog("001");
-
                 int IssueCount = driver.FindElements(By.XPath($"/html/body/table[3]/tbody/tr")).Count;
-
-                log.WriteLog("002");
-
                 if (IssueCount == 0)
                 {
                     log.WriteLog("003");
