@@ -40,24 +40,63 @@ namespace Lottery539
         }
 
         private void btnQuery_Click(object sender, EventArgs e)
-        {           
+        {      
             LoadDataToListView();                   
         }
         private void LoadDataToListView()
         {
+            ReloadListView();
             log.WriteLog("匯入資料開始...");
             ReadFile readFile = new ReadFile();
             List<LotteryData> datas = readFile.ReadTxtFile();
             log.WriteLog("匯入資料完成...");
-            Dictionary<string, int> groupNum57 = GetGroupNum(57, datas);
-            Dictionary<string, int> groupNum48 = GetGroupNum(48, datas);
-            List<string> hotNums =groupNum57.Where(g => g.Value > 10).Select(s => s.Key).ToList();
-            string horNumString = helpers.GetNumString(hotNums);
+            int lotteryType = cbLotteryType.SelectedIndex;
+            Dictionary<string, int> groupNum = new Dictionary<string, int>();
+            int MaxVal =Convert.ToInt16(tbMax.Text);
+            int MinVal = Convert.ToInt16(tbMin.Text);
+           
+            if (lotteryType == 1)
+                groupNum = GetGroupNum(57, datas);
+            else
+            {
+                groupNum = GetGroupNum(48, datas);
+                datas = datas.Take(48).ToList();
+            }
+            int[] intNumsCount = groupNum.Values.ToArray();
+            string[] numsCount = intNumsCount.Select(x => x.ToString()).ToArray();
+
+            lvStatistics.Font = new Font(lvStatistics.Font, FontStyle.Bold);
+            foreach (var nums in groupNum)
+            lvStatistics.Columns.Add(nums.Key,30);
+            lvStatistics.Items.Add(new ListViewItem(numsCount));
+            lvStatistics.Items[0].Font = new Font(Control.DefaultFont, FontStyle.Regular);
+
+
+
+            List<string> hotNums = groupNum.Where(g => g.Value >= MaxVal).Select(s => s.Key).ToList();
+            List<string> coldNums = groupNum.Where(g => g.Value <= MinVal).Select(s => s.Key).ToList();
+            string horNumString = string.Empty;
+            string coldNumString = string.Empty;
+            string hotPointNumString = string.Empty;
+            try
+            {
+                 horNumString = helpers.GetNumString(hotNums);
+                 coldNumString = helpers.GetNumString(coldNums);
+            }
+            catch
+            {
+            }
             foreach (var d in datas)
             {
-                string hotPointNumString = GetHotPointNum(hotNums,d.Numbers);               
-                lvShow.Items.Add(new ListViewItem(new string[] { d.Issue,d.LotteryDate,"","",d.Numbers, horNumString, hotPointNumString,"" }));
-            }         
+                try
+                {
+                    hotPointNumString = GetHotPointNum(hotNums, d.Numbers);
+                }
+                catch
+                {
+                }
+                lvShow.Items.Add(new ListViewItem(new string[] { d.Issue,d.LotteryDate,d.Numbers, horNumString, hotPointNumString, coldNumString }));
+            }
         }
         private Dictionary<string, int> GetGroupNum(int groupCount, List<LotteryData> datas)
         {
@@ -97,6 +136,9 @@ namespace Lottery539
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            cbLotteryType.Items.Add("48期");
+            cbLotteryType.Items.Add("57期");
+            cbLotteryType.SelectedIndex = 0;
             ReloadListView();
         }
         private void ReloadListView()
@@ -109,22 +151,13 @@ namespace Lottery539
             lvShow.Columns.Add("期號", 80);
             lvShow.Columns.Add("日期", 150);
             lvShow.Columns.Add("開獎號碼", 200);
-            lvShow.Columns.Add("熱門號", 200);
+            lvShow.Columns.Add("熱門號", 250);
             lvShow.Columns.Add("當期開出熱門號", 200);
-            lvShow.Columns.Add("冷門號", 200);
+            lvShow.Columns.Add("冷門號", 250);
 
             lvStatistics.View = View.Details;
             lvStatistics.GridLines = true;
             lvStatistics.FullRowSelect = true;
-            for(int i = 1; i < 40; i++)
-            {
-                string columnText = "";
-                if (i < 10)               
-                    columnText = "0" + i;                
-                else
-                    columnText = i.ToString();
-                lvStatistics.Columns.Add(columnText, 30);
-            }       
         }
         public string GetHotPointNum(List<string> hotNums, string num)
         {
@@ -138,6 +171,28 @@ namespace Lottery539
             if(result.Length!=0)
                result = result.Substring(0, result.Length - 1);
             return result;
+        }
+
+        private void tbMax_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void cbLotteryType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbLotteryType.SelectedIndex == 1)
+            {
+                tbMax.Text = "7";
+                tbMin.Text = "2";
+            }
+            else
+            {
+                tbMax.Text = "8";
+                tbMin.Text = "4";
+            }
         }
     }
 }
