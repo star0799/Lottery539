@@ -78,25 +78,15 @@ namespace Lottery539
             string horNumString = string.Empty;
             string coldNumString = string.Empty;
             string hotPointNumString = string.Empty;
-            try
-            {
-                 horNumString = helpers.GetNumString(hotNums);
-                 coldNumString = helpers.GetNumString(coldNums);
-            }
-            catch
-            {
-            }
+            horNumString = helpers.GetNumString(hotNums);
+            coldNumString = helpers.GetNumString(coldNums);
+
             foreach (var d in datas)
             {
-                try
-                {
-                    hotPointNumString = GetHotPointNum(hotNums, d.Numbers);
-                }
-                catch
-                {
-                }
-                lvShow.Items.Add(new ListViewItem(new string[] { d.Issue,d.LotteryDate,d.Numbers, horNumString, hotPointNumString, coldNumString }));
+                hotPointNumString = GetHotPointNum(hotNums, d.Numbers);
+                lvShow.Items.Add(new ListViewItem(new string[] { d.Issue,d.LotteryDate,d.Numbers, hotPointNumString}));
             }
+            lvNumResult.Items.Add(new ListViewItem(new string[] { horNumString,coldNumString }));
         }
         private Dictionary<string, int> GetGroupNum(int groupCount, List<LotteryData> datas)
         {
@@ -145,19 +135,24 @@ namespace Lottery539
         {
             lvShow.Clear();
             lvStatistics.Clear();
+            lvNumResult.Clear();
             lvShow.View = View.Details;
             lvShow.GridLines = true;
             lvShow.FullRowSelect = true;
-            lvShow.Columns.Add("期號", 80);
-            lvShow.Columns.Add("日期", 150);
-            lvShow.Columns.Add("開獎號碼", 200);
-            lvShow.Columns.Add("熱門號", 250);
-            lvShow.Columns.Add("當期開出熱門號", 200);
-            lvShow.Columns.Add("冷門號", 250);
+            lvShow.Columns.Add("期號", 200);
+            lvShow.Columns.Add("日期", 300);
+            lvShow.Columns.Add("開獎號碼", 400);
+            lvShow.Columns.Add("當期開出熱門號", 300);
 
             lvStatistics.View = View.Details;
             lvStatistics.GridLines = true;
             lvStatistics.FullRowSelect = true;
+
+            lvNumResult.View = View.Details;
+            lvNumResult.GridLines = true;
+            lvNumResult.FullRowSelect = true;
+            lvNumResult.Columns.Add("熱門號", 600);
+            lvNumResult.Columns.Add("冷門號", 600);
         }
         public string GetHotPointNum(List<string> hotNums, string num)
         {
@@ -168,8 +163,15 @@ namespace Lottery539
                 if (hotNums.Contains(n))
                     result += n + ",";
             }
-            if(result.Length!=0)
-               result = result.Substring(0, result.Length - 1);
+            try
+            {
+                result = result.Substring(0, result.Length - 1);
+            }
+            catch(Exception ex)
+            {
+                result = string.Empty;
+                log.WriteLog("GetHotPointNum: "+ex.Message);
+            }
             return result;
         }
 
@@ -185,13 +187,13 @@ namespace Lottery539
         {
             if (cbLotteryType.SelectedIndex == 1)
             {
-                tbMax.Text = "7";
-                tbMin.Text = "2";
+                tbMax.Text = "8";
+                tbMin.Text = "4";
             }
             else
             {
-                tbMax.Text = "8";
-                tbMin.Text = "4";
+                tbMax.Text = "7";
+                tbMin.Text = "2";
             }
         }
     }

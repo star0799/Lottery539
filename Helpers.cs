@@ -8,14 +8,24 @@ namespace Lottery539
 {
     class Helpers
     {
+        log log = new log();
         public string GetNumString(List<string> nums)
         {
-            string result = string.Empty;            
+            string result = string.Empty;
+           
             foreach (var s in nums)
             {
                 result += s.Trim() + ",";
             }
-            result = result.Substring(0, result.Length - 1);
+            try
+            {
+                result = result.Substring(0, result.Length - 1);
+            }
+            catch(Exception ex)
+            {
+                result = string.Empty;
+                log.WriteLog(ex.Message);
+            }
             return result;
         }
         public string GetNumString(List<int> nums)
@@ -25,7 +35,15 @@ namespace Lottery539
             {
                 result += s.ToString().Trim() + ",";
             }
-            result = result.Substring(0, result.Length - 1);
+            try
+            {
+                result = result.Substring(0, result.Length - 1);
+            }
+            catch (Exception ex)
+            {
+                result = string.Empty;
+                log.WriteLog(ex.Message);
+            }
             return result;
         }
 
