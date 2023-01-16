@@ -69,7 +69,7 @@ namespace Lottery539
             foreach (var nums in groupNum)
             lvStatistics.Columns.Add(nums.Key,30);
             lvStatistics.Items.Add(new ListViewItem(numsCount));
-            lvStatistics.Items[0].Font = new Font(Control.DefaultFont, FontStyle.Regular);
+            lvStatistics.Items[0].Font = new Font("新細明體", 12f, FontStyle.Regular);
 
 
 
@@ -187,13 +187,13 @@ namespace Lottery539
         {
             if (cbLotteryType.SelectedIndex == 1)
             {
-                tbMax.Text = "8";
-                tbMin.Text = "4";
+                tbMax.Text = "9";
+                tbMin.Text = "5";
             }
             else
             {
-                tbMax.Text = "7";
-                tbMin.Text = "2";
+                tbMax.Text = "8";
+                tbMin.Text = "4";
             }
         }
     }
