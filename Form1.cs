@@ -67,7 +67,7 @@ namespace Lottery539
 
             lvStatistics.Font = new Font(lvStatistics.Font, FontStyle.Bold);
             foreach (var nums in groupNum)
-            lvStatistics.Columns.Add(nums.Key,30);
+            lvStatistics.Columns.Add(nums.Key,40);
             lvStatistics.Items.Add(new ListViewItem(numsCount));
             lvStatistics.Items[0].Font = new Font("新細明體", 12f, FontStyle.Regular);
 

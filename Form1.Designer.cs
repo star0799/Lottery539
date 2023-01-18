@@ -44,7 +44,7 @@
             // btnUpdate
             // 
             this.btnUpdate.Font = new System.Drawing.Font("新細明體", 10F);
-            this.btnUpdate.Location = new System.Drawing.Point(1289, 646);
+            this.btnUpdate.Location = new System.Drawing.Point(1267, 647);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
             this.btnUpdate.Size = new System.Drawing.Size(59, 26);
@@ -56,7 +56,7 @@
             // btnQuery
             // 
             this.btnQuery.Font = new System.Drawing.Font("新細明體", 14F);
-            this.btnQuery.Location = new System.Drawing.Point(1354, 679);
+            this.btnQuery.Location = new System.Drawing.Point(1332, 680);
             this.btnQuery.Name = "btnQuery";
             this.btnQuery.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
             this.btnQuery.Size = new System.Drawing.Size(123, 38);
@@ -91,7 +91,7 @@
             this.cbLotteryType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbLotteryType.Font = new System.Drawing.Font("新細明體", 14F);
             this.cbLotteryType.FormattingEnabled = true;
-            this.cbLotteryType.Location = new System.Drawing.Point(1354, 510);
+            this.cbLotteryType.Location = new System.Drawing.Point(1332, 511);
             this.cbLotteryType.Margin = new System.Windows.Forms.Padding(3, 3, 30, 30);
             this.cbLotteryType.Name = "cbLotteryType";
             this.cbLotteryType.Size = new System.Drawing.Size(123, 27);
@@ -101,7 +101,7 @@
             // tbMax
             // 
             this.tbMax.Font = new System.Drawing.Font("新細明體", 14F);
-            this.tbMax.Location = new System.Drawing.Point(1354, 567);
+            this.tbMax.Location = new System.Drawing.Point(1332, 568);
             this.tbMax.MaxLength = 2;
             this.tbMax.Name = "tbMax";
             this.tbMax.Size = new System.Drawing.Size(123, 30);
@@ -111,7 +111,7 @@
             // tbMin
             // 
             this.tbMin.Font = new System.Drawing.Font("新細明體", 14F);
-            this.tbMin.Location = new System.Drawing.Point(1354, 611);
+            this.tbMin.Location = new System.Drawing.Point(1332, 612);
             this.tbMin.MaxLength = 2;
             this.tbMin.Name = "tbMin";
             this.tbMin.Size = new System.Drawing.Size(123, 30);
@@ -121,7 +121,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("新細明體", 14F);
-            this.label3.Location = new System.Drawing.Point(1296, 614);
+            this.label3.Location = new System.Drawing.Point(1274, 615);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(52, 19);
             this.label3.TabIndex = 23;
@@ -141,7 +141,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("新細明體", 14F);
-            this.label1.Location = new System.Drawing.Point(1296, 513);
+            this.label1.Location = new System.Drawing.Point(1274, 514);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(52, 19);
             this.label1.TabIndex = 21;
@@ -151,7 +151,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("新細明體", 14F);
-            this.label2.Location = new System.Drawing.Point(1296, 570);
+            this.label2.Location = new System.Drawing.Point(1274, 571);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(52, 19);
             this.label2.TabIndex = 22;
