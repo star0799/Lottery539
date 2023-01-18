@@ -159,8 +159,6 @@ namespace Lottery539
             //tbLotteryType.Items.Add("48期");
             //tbLotteryType.Items.Add("57期");
             //tbLotteryType.SelectedIndex = 0;          
-            for (int i = 1; i <= lottery39.Count; i++)
-                lottery39.Add(i);
             dtStart.Value=GetDayByIssueCount(48, dtEnd.Value.Date);
             ReloadListView();
         }
