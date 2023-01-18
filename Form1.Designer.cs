@@ -32,13 +32,15 @@
             this.btnQuery = new System.Windows.Forms.Button();
             this.lvShow = new System.Windows.Forms.ListView();
             this.lvStatistics = new System.Windows.Forms.ListView();
-            this.cbLotteryType = new System.Windows.Forms.ComboBox();
             this.tbMax = new System.Windows.Forms.TextBox();
             this.tbMin = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.lvNumResult = new System.Windows.Forms.ListView();
-            this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.dtStart = new System.Windows.Forms.DateTimePicker();
+            this.dtEnd = new System.Windows.Forms.DateTimePicker();
+            this.label1 = new System.Windows.Forms.Label();
+            this.tbLotteryType = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // btnUpdate
@@ -72,7 +74,7 @@
             this.lvShow.HideSelection = false;
             this.lvShow.Location = new System.Drawing.Point(0, 0);
             this.lvShow.Name = "lvShow";
-            this.lvShow.Size = new System.Drawing.Size(1489, 501);
+            this.lvShow.Size = new System.Drawing.Size(1489, 463);
             this.lvShow.TabIndex = 16;
             this.lvShow.UseCompatibleStateImageBehavior = false;
             // 
@@ -85,18 +87,6 @@
             this.lvStatistics.Size = new System.Drawing.Size(1261, 92);
             this.lvStatistics.TabIndex = 17;
             this.lvStatistics.UseCompatibleStateImageBehavior = false;
-            // 
-            // cbLotteryType
-            // 
-            this.cbLotteryType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbLotteryType.Font = new System.Drawing.Font("新細明體", 14F);
-            this.cbLotteryType.FormattingEnabled = true;
-            this.cbLotteryType.Location = new System.Drawing.Point(1332, 511);
-            this.cbLotteryType.Margin = new System.Windows.Forms.Padding(3, 3, 30, 30);
-            this.cbLotteryType.Name = "cbLotteryType";
-            this.cbLotteryType.Size = new System.Drawing.Size(123, 27);
-            this.cbLotteryType.TabIndex = 18;
-            this.cbLotteryType.SelectedIndexChanged += new System.EventHandler(this.cbLotteryType_SelectedIndexChanged);
             // 
             // tbMax
             // 
@@ -131,21 +121,11 @@
             // 
             this.lvNumResult.Font = new System.Drawing.Font("新細明體", 14F);
             this.lvNumResult.HideSelection = false;
-            this.lvNumResult.Location = new System.Drawing.Point(0, 510);
+            this.lvNumResult.Location = new System.Drawing.Point(0, 469);
             this.lvNumResult.Name = "lvNumResult";
-            this.lvNumResult.Size = new System.Drawing.Size(1261, 109);
+            this.lvNumResult.Size = new System.Drawing.Size(1261, 150);
             this.lvNumResult.TabIndex = 24;
             this.lvNumResult.UseCompatibleStateImageBehavior = false;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("新細明體", 14F);
-            this.label1.Location = new System.Drawing.Point(1274, 514);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(52, 19);
-            this.label1.TabIndex = 21;
-            this.label1.Text = "期數:";
             // 
             // label2
             // 
@@ -157,18 +137,56 @@
             this.label2.TabIndex = 22;
             this.label2.Text = "上限:";
             // 
+            // dtStart
+            // 
+            this.dtStart.Location = new System.Drawing.Point(1267, 469);
+            this.dtStart.Name = "dtStart";
+            this.dtStart.Size = new System.Drawing.Size(103, 22);
+            this.dtStart.TabIndex = 25;
+            this.dtStart.ValueChanged += new System.EventHandler(this.dtStart_ValueChanged);
+            // 
+            // dtEnd
+            // 
+            this.dtEnd.Location = new System.Drawing.Point(1386, 469);
+            this.dtEnd.Name = "dtEnd";
+            this.dtEnd.Size = new System.Drawing.Size(103, 22);
+            this.dtEnd.TabIndex = 26;
+            this.dtEnd.ValueChanged += new System.EventHandler(this.dtEnd_ValueChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("新細明體", 14F);
+            this.label1.Location = new System.Drawing.Point(1274, 514);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(52, 19);
+            this.label1.TabIndex = 21;
+            this.label1.Text = "期數:";
+            // 
+            // tbLotteryType
+            // 
+            this.tbLotteryType.Font = new System.Drawing.Font("新細明體", 14F);
+            this.tbLotteryType.Location = new System.Drawing.Point(1332, 510);
+            this.tbLotteryType.MaxLength = 2;
+            this.tbLotteryType.Name = "tbLotteryType";
+            this.tbLotteryType.ReadOnly = true;
+            this.tbLotteryType.Size = new System.Drawing.Size(123, 30);
+            this.tbLotteryType.TabIndex = 27;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1489, 719);
+            this.Controls.Add(this.tbLotteryType);
+            this.Controls.Add(this.dtEnd);
+            this.Controls.Add(this.dtStart);
             this.Controls.Add(this.lvNumResult);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tbMin);
             this.Controls.Add(this.tbMax);
-            this.Controls.Add(this.cbLotteryType);
             this.Controls.Add(this.lvStatistics);
             this.Controls.Add(this.lvShow);
             this.Controls.Add(this.btnQuery);
@@ -187,13 +205,15 @@
         private System.Windows.Forms.Button btnQuery;
         private System.Windows.Forms.ListView lvShow;
         private System.Windows.Forms.ListView lvStatistics;
-        private System.Windows.Forms.ComboBox cbLotteryType;
         private System.Windows.Forms.TextBox tbMax;
         private System.Windows.Forms.TextBox tbMin;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ListView lvNumResult;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.DateTimePicker dtStart;
+        private System.Windows.Forms.DateTimePicker dtEnd;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox tbLotteryType;
     }
 }
 

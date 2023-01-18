@@ -50,18 +50,28 @@ namespace Lottery539
             ReadFile readFile = new ReadFile();
             List<LotteryData> datas = readFile.ReadTxtFile();
             log.WriteLog("匯入資料完成...");
-            int lotteryType = cbLotteryType.SelectedIndex;
+            //int IssueCount = Convert.ToInt16(tbLotteryType.Text);
             Dictionary<string, int> groupNum = new Dictionary<string, int>();
-            int MaxVal =Convert.ToInt16(tbMax.Text);
-            int MinVal = Convert.ToInt16(tbMin.Text);
-           
-            if (lotteryType == 1)
-                groupNum = GetGroupNum(57, datas);
+            int MaxVal =0;
+            int MinVal = 0;
+            if (!string.IsNullOrEmpty(tbMax.Text.Trim()))
+            {
+                MaxVal = Convert.ToInt16(tbMax.Text);
+            }
             else
             {
-                groupNum = GetGroupNum(48, datas);
-                datas = datas.Take(48).ToList();
+                tbMax.Text = "0";
             }
+            if (!string.IsNullOrEmpty(tbMin.Text.Trim()))
+            {
+                MinVal = Convert.ToInt16(tbMin.Text);
+            }
+            else
+            {
+                tbMin.Text = "0";
+            }
+            datas = QueryDate(datas);
+            groupNum = GetGroupNum(datas);
             int[] intNumsCount = groupNum.Values.ToArray();
             string[] numsCount = intNumsCount.Select(x => x.ToString()).ToArray();
 
@@ -78,23 +88,30 @@ namespace Lottery539
             string horNumString = string.Empty;
             string coldNumString = string.Empty;
             string hotPointNumString = string.Empty;
+            string coldPointNumString = string.Empty;
+            string hotPointCount = string.Empty;
+            string coldPointCount = string.Empty;
             horNumString = helpers.GetNumString(hotNums);
             coldNumString = helpers.GetNumString(coldNums);
 
             foreach (var d in datas)
             {
-                hotPointNumString = GetHotPointNum(hotNums, d.Numbers);
-                lvShow.Items.Add(new ListViewItem(new string[] { d.Issue,d.LotteryDate,d.Numbers, hotPointNumString}));
+                hotPointNumString = GetPointNum(hotNums, d.Numbers);
+                hotPointCount = GetPointCount(hotPointNumString).ToString();
+                coldPointNumString = GetPointNum(coldNums, d.Numbers);
+                coldPointCount= GetPointCount(coldPointNumString).ToString();
+                lvShow.Items.Add(new ListViewItem(new string[] { d.Issue,d.LotteryDate,d.Numbers, hotPointNumString, hotPointCount, coldPointNumString, coldPointCount }));
             }
+            tbLotteryType.Text = datas.Count.ToString() ;
             lvNumResult.Items.Add(new ListViewItem(new string[] { horNumString,coldNumString }));
         }
-        private Dictionary<string, int> GetGroupNum(int groupCount, List<LotteryData> datas)
+        private Dictionary<string, int> GetGroupNum( List<LotteryData> datas)
         {
             List<int> intlist = new List<int>();
             Dictionary<string, int> keyValues = new Dictionary<string, int>();
             string tmpString = string.Empty;
 
-            datas = datas.Take(groupCount).ToList();
+            datas = datas.Take(datas.Count()).ToList();
             foreach (var d in datas)
             tmpString += d.Numbers + ",";
             tmpString = tmpString.Substring(0, tmpString.Length - 1);
@@ -111,14 +128,27 @@ namespace Lottery539
                        g.Key,
                        Value = g.Count()
                    };
+
+
             foreach (var x in q)
             {
                 string key = "";
                 if (Convert.ToInt32(x.Key) < 10)
                     key = "0" + x.Key;
                 else
-                    key =x.Key;
+                    key = x.Key;
                 keyValues.Add(key, x.Value);
+            }
+
+            for(int i = 1; i <= 39; i++)
+            {
+                string key = "";
+                if (Convert.ToInt32(i) < 10)
+                    key = "0" + i;
+                else
+                    key = i.ToString();
+                if (!keyValues.ContainsKey(key))
+                   keyValues.Add(key, 0);
             }
             Dictionary<string, int> result = keyValues.OrderBy(o =>Convert.ToInt32(o.Key)).ToDictionary(o => o.Key, p => p.Value);
             return result;
@@ -126,9 +156,12 @@ namespace Lottery539
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            cbLotteryType.Items.Add("48期");
-            cbLotteryType.Items.Add("57期");
-            cbLotteryType.SelectedIndex = 0;
+            //tbLotteryType.Items.Add("48期");
+            //tbLotteryType.Items.Add("57期");
+            //tbLotteryType.SelectedIndex = 0;          
+            for (int i = 1; i <= lottery39.Count; i++)
+                lottery39.Add(i);
+            dtStart.Value=GetDayByIssueCount(48, dtEnd.Value.Date);
             ReloadListView();
         }
         private void ReloadListView()
@@ -143,6 +176,9 @@ namespace Lottery539
             lvShow.Columns.Add("日期", 300);
             lvShow.Columns.Add("開獎號碼", 400);
             lvShow.Columns.Add("當期開出熱門號", 300);
+            lvShow.Columns.Add("熱門號數量", 150);
+            lvShow.Columns.Add("當期開出冷門號", 300);
+            lvShow.Columns.Add("冷門號數量",150);
 
             lvStatistics.View = View.Details;
             lvStatistics.GridLines = true;
@@ -154,13 +190,13 @@ namespace Lottery539
             lvNumResult.Columns.Add("熱門號", 600);
             lvNumResult.Columns.Add("冷門號", 600);
         }
-        public string GetHotPointNum(List<string> hotNums, string num)
+        public string GetPointNum(List<string> nums, string num)
         {
             string result = string.Empty;
             var numList=helpers.GetNumList(num);
             foreach(var n in numList)
             {
-                if (hotNums.Contains(n))
+                if (nums.Contains(n))
                     result += n + ",";
             }
             try
@@ -183,18 +219,82 @@ namespace Lottery539
             }
         }
 
-        private void cbLotteryType_SelectedIndexChanged(object sender, EventArgs e)
+        private List<LotteryData> QueryDate(List<LotteryData> datas)
         {
-            if (cbLotteryType.SelectedIndex == 1)
+            DateTime starDate = dtStart.Value.Date;
+            DateTime endDate = dtEnd.Value.Date;
+            datas = datas.Where(d => Convert.ToDateTime(d.LotteryDate).Date >= starDate && Convert.ToDateTime(d.LotteryDate).Date <= endDate).ToList();
+            return datas;
+        }
+        private int GetPointCount(string num)
+        {
+            int result = 0;
+            if(num.Trim().Length!=0)
             {
-                tbMax.Text = "9";
-                tbMin.Text = "5";
+                result = num.Split(',').Count();
             }
-            else
+            return result;
+        }
+
+        private void tbLotteryType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //if (tbLotteryType.SelectedIndex == 1)
+            //{
+            //    tbMax.Text = "9";
+            //    tbMin.Text = "5";
+            //}
+            //else
+            //{
+            //    tbMax.Text = "8";
+            //    tbMin.Text = "4";
+            //}
+        }
+        private int GetIssueCountByDayRange(DateTime startDay, DateTime endDay)
+        {
+            int result = 0;
+            if (startDay > endDay)
+                return result;
+            DateTime day = startDay;
+            while (day != endDay)
             {
-                tbMax.Text = "8";
-                tbMin.Text = "4";
+                if (day.DayOfWeek == DayOfWeek.Sunday)
+                    continue;
+                else
+                    result++;
+                day.AddDays(1);
             }
+            return result;
+        }
+        private DateTime GetDayByIssueCount(int issues, DateTime endDay)
+        {
+            DateTime result = DateTime.Now.AddDays(-65);
+            DateTime day = endDay;
+            int count = 0;
+            try
+            {               
+                while (count != issues)
+                {                    
+                    if (day.DayOfWeek != DayOfWeek.Sunday)
+                        count++;                                    
+                    result=day.AddDays(-1);
+                    day = result;
+                }
+            }
+            catch(Exception ex)
+            {
+                log.WriteLog(ex.Message);
+            }
+            return result;
+        }
+
+        private void dtStart_ValueChanged(object sender, EventArgs e)
+        {
+            tbLotteryType.Text = "";
+        }
+
+        private void dtEnd_ValueChanged(object sender, EventArgs e)
+        {
+            tbLotteryType.Text = "";
         }
     }
 }

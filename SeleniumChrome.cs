@@ -47,7 +47,8 @@ namespace Lottery539
                 string userId = ConfigurationManager.AppSettings["UserId"].ToString();
                 string userPwd = ConfigurationManager.AppSettings["UserPwd"].ToString();
                 int dayRange = Convert.ToInt32(ConfigurationManager.AppSettings["DayRange"]);
-                int Issue1 = Convert.ToInt32(ConfigurationManager.AppSettings["Issue1"]);
+                //int Issue = Convert.ToInt32(ConfigurationManager.AppSettings["Issue"]);
+                int Issue = Math.Abs(dayRange)-(int)Math.Abs(dayRange)/7-1;
                 string startDate = DateTime.Now.AddDays(dayRange).ToString("yyyy-MM-dd");
                 string endDate = DateTime.Now.ToString("yyyy-MM-dd");
                 string lotteryUrl = ConfigurationManager.AppSettings["LotteryUrl"].ToString() ?? "http://lotto.arclink.com.tw/";
@@ -111,7 +112,7 @@ namespace Lottery539
                 log.WriteLog("888");
                 wait.Until(ExpectedConditions.ElementToBeClickable(By.Name("Submit"))).Click();
 
-                for (int i= 0; i <Issue1; i++)
+                for (int i= 0; i <Issue; i++)
                 {
                     LotteryData lotteryData = new LotteryData();
                     lotteryData.Issue = driver.FindElement(By.XPath($"/html/body/table[3]/tbody/tr[{i+3}]/td[1]")).Text;
