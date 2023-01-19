@@ -105,53 +105,66 @@ namespace Lottery539
             tbLotteryType.Text = datas.Count.ToString() ;
             lvNumResult.Items.Add(new ListViewItem(new string[] { horNumString,coldNumString }));
         }
-        private Dictionary<string, int> GetGroupNum( List<LotteryData> datas)
+        //private Dictionary<string, int> GetGroupNum(List<LotteryData> datas)
+        //{
+        //    List<int> intlist = new List<int>();
+        //    Dictionary<string, int> keyValues = new Dictionary<string, int>();
+        //    string tmpString = string.Empty;
+
+        //    datas = datas.Take(datas.Count()).ToList();
+        //    foreach (var d in datas)
+        //        tmpString += d.Numbers + ",";
+        //    tmpString = tmpString.Substring(0, tmpString.Length - 1);
+        //    var numList = tmpString.Split(',');
+
+        //    foreach (var n in numList)
+        //    {
+        //        intlist.Add(Convert.ToInt32(n));
+        //    }
+        //    var q = from p in intlist
+        //            group p by p.ToString() into g
+        //            select new
+        //            {
+        //                g.Key,
+        //                Value = g.Count()
+        //            };
+
+
+        //    foreach (var x in q)
+        //    {
+        //        string key = "";
+        //        if (Convert.ToInt32(x.Key) < 10)
+        //            key = "0" + x.Key;
+        //        else
+        //            key = x.Key;
+        //        keyValues.Add(key, x.Value);
+        //    }
+
+        //    for (int i = 1; i <= 39; i++)
+        //    {
+        //        string key = "";
+        //        if (Convert.ToInt32(i) < 10)
+        //            key = "0" + i;
+        //        else
+        //            key = i.ToString();
+        //        if (!keyValues.ContainsKey(key))
+        //            keyValues.Add(key, 0);
+        //    }
+        //    Dictionary<string, int> result = keyValues.OrderBy(o => Convert.ToInt32(o.Key)).ToDictionary(o => o.Key, p => p.Value);
+        //    return result;
+        //}
+        private Dictionary<string, int> GetGroupNum(List<LotteryData> datas)
         {
-            List<int> intlist = new List<int>();
-            Dictionary<string, int> keyValues = new Dictionary<string, int>();
-            string tmpString = string.Empty;
+            var intlist = datas.SelectMany(d => d.Numbers.Split(',').Select(int.Parse));
+            var keyValues = intlist.GroupBy(n => n, new NumberEqualityComparer())
+                                   .ToDictionary(g => g.Key.ToString("D2"), g => g.Count()).OrderBy(o => Convert.ToInt32(o.Key)).ToDictionary(o => o.Key, p => p.Value);
+            return keyValues;
+        }
 
-            datas = datas.Take(datas.Count()).ToList();
-            foreach (var d in datas)
-            tmpString += d.Numbers + ",";
-            tmpString = tmpString.Substring(0, tmpString.Length - 1);
-            var numList = tmpString.Split(',');
-            
-            foreach (var n in numList)
-            {
-                intlist.Add(Convert.ToInt32(n));
-            }
-            var q =from p in intlist
-                   group p by p.ToString() into g
-                   select new
-                   {
-                       g.Key,
-                       Value = g.Count()
-                   };
-
-
-            foreach (var x in q)
-            {
-                string key = "";
-                if (Convert.ToInt32(x.Key) < 10)
-                    key = "0" + x.Key;
-                else
-                    key = x.Key;
-                keyValues.Add(key, x.Value);
-            }
-
-            for(int i = 1; i <= 39; i++)
-            {
-                string key = "";
-                if (Convert.ToInt32(i) < 10)
-                    key = "0" + i;
-                else
-                    key = i.ToString();
-                if (!keyValues.ContainsKey(key))
-                   keyValues.Add(key, 0);
-            }
-            Dictionary<string, int> result = keyValues.OrderBy(o =>Convert.ToInt32(o.Key)).ToDictionary(o => o.Key, p => p.Value);
-            return result;
+        private class NumberEqualityComparer : IEqualityComparer<int>
+        {
+            public bool Equals(int x, int y) => x == y;
+            public int GetHashCode(int obj) => obj.GetHashCode();
         }
 
         private void Form1_Load(object sender, EventArgs e)

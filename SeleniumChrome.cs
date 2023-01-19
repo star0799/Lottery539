@@ -49,9 +49,16 @@ namespace Lottery539
                 int dayRange = Convert.ToInt32(ConfigurationManager.AppSettings["DayRange"]);
                 //int Issue = Convert.ToInt32(ConfigurationManager.AppSettings["Issue"]);
                 int Issue = Math.Abs(dayRange)-(int)Math.Abs(dayRange)/7-1;
-                string startDate = DateTime.Now.AddDays(dayRange).ToString("yyyy-MM-dd");
+                string startDate = string.Empty;
                 string endDate = DateTime.Now.ToString("yyyy-MM-dd");
                 string lotteryUrl = ConfigurationManager.AppSettings["LotteryUrl"].ToString() ?? "http://lotto.arclink.com.tw/";
+
+                DateTime date = DateTime.Now.AddDays(dayRange);
+                if (date.DayOfWeek == DayOfWeek.Sunday)
+                    date.AddDays(-1);
+                startDate= date.ToString("yyyy-MM-dd");
+
+
                 driver.Navigate().GoToUrl(lotteryUrl);
                 wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
                 driver.SwitchTo().Frame("dynamicInfo");
@@ -70,46 +77,34 @@ namespace Lottery539
                 int IssueCount = driver.FindElements(By.XPath($"/html/body/table[3]/tbody/tr")).Count;
                 if (IssueCount == 0)
                 {
-                    log.WriteLog("003");
                     Thread.Sleep(5000);
                 }
-                log.WriteLog("004");
                 IssueCount = IssueCount - 2;
-                log.WriteLog("005");
                 string finalIssue = driver.FindElement(By.XPath($"/html/body/table[3]/tbody/tr[{IssueCount}]/td[1]")).Text;
-                log.WriteLog("006");
                 string dowpdownStartName = "periods1";
-                log.WriteLog("007");
                 IWebElement dowpdownStartDate = wait.Until(ExpectedConditions.ElementToBeClickable(By.Id(dowpdownStartName)));
-                log.WriteLog("111");
                 //dowpdownStartDate.Click();
 
                 //找出所有g-menu-item
                 //var itemCount = driver.FindElements(By.XPath($".//*[@id='{dowpdownStartName}']/option"));
                 var selectElement = new SelectElement(dowpdownStartDate);
-                log.WriteLog("222");
                 try
                 {
                     selectElement.SelectByText(startDate);
-                    log.WriteLog("333");
                 }
                 catch(Exception ex)
                 {
                     startDate = DateTime.Now.AddDays(dayRange-1).ToString("yyyy-MM-dd");
-                    log.WriteLog("444");
                     selectElement.SelectByText(startDate);
-                    log.WriteLog("555");
                 }
                 //driver.FindElement(By.XPath($"//*[@id='periods1']/option[1]")).Text
                 //driver.FindElement(By.Name("Submit")).Click();
-                log.WriteLog("666");
                 //經常沒辦法改時間，改用while持續找到指定日期為止
                 while (selectElement.SelectedOption.Text!= startDate)
                 {
-                    log.WriteLog("777");
                     selectElement.SelectByText(startDate);
                 }
-                log.WriteLog("888");
+              
                 wait.Until(ExpectedConditions.ElementToBeClickable(By.Name("Submit"))).Click();
 
                 for (int i= 0; i <Issue; i++)
