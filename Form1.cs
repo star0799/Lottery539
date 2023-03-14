@@ -195,9 +195,10 @@ namespace Lottery539
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //tbLotteryType.Items.Add("48期");
-            //tbLotteryType.Items.Add("57期");
-            //tbLotteryType.SelectedIndex = 0;          
+            //this.Controls.Add(panel1);
+            //tabControl1.Controls.Add(tabPage1);
+            //panel1.Controls.Add(btnQuery);
+            //tabPage1.Controls.Add(panel1);
             dtStart.Value=GetDayByIssueCount(48, dtEnd.Value.Date);
             ReloadListView();
         }
