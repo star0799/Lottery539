@@ -195,10 +195,6 @@ namespace Lottery539
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //this.Controls.Add(panel1);
-            //tabControl1.Controls.Add(tabPage1);
-            //panel1.Controls.Add(btnQuery);
-            //tabPage1.Controls.Add(panel1);
             dtStart.Value=GetDayByIssueCount(48, dtEnd.Value.Date);
             ReloadListView();
         }
@@ -394,6 +390,62 @@ namespace Lottery539
         private void dtEnd_ValueChanged(object sender, EventArgs e)
         {
             tbLotteryType.Text = "";
+        }
+
+        private void btnQuery2_Click(object sender, EventArgs e)
+        {
+            LoadDataToListView2();
+        }
+        private void LoadDataToListView2()
+        {
+            ReloadListView2();
+            log.WriteLog("匯入資料2開始...");
+            ReadFile readFile = new ReadFile();
+            datas = readFile.ReadTxtFile();
+            log.WriteLog("匯入資料2完成...");
+            var queryDatas = datas.Where(d => Convert.ToDateTime(d.LotteryDate).Date >= dtStart2.Value.Date && Convert.ToDateTime(d.LotteryDate).Date <= dtEnd2.Value.Date).ToList();
+            tbPeriod2.Text=queryDatas.Count.ToString();
+        }
+        private void ReloadListView2()
+        {
+            lvResult2.Clear();
+            lvDetail2.Clear();
+            tbResult2.Clear();
+            lvResult2.View = View.Details;
+            lvResult2.GridLines = true;
+            lvResult2.FullRowSelect = true;
+            //lvShow.Columns.Add("期號", 200);
+            //lvShow.Columns.Add("日期", 300);
+
+            lvDetail2.View = View.Details;
+            lvDetail2.GridLines = true;
+            lvDetail2.FullRowSelect = true;
+            //lvNumResult.Columns.Add("熱門號", 600);
+            //lvNumResult.Columns.Add("支數", 80);
+        }
+        private void tbPeriod2GetIssueCount()
+        {
+            tbPeriod2.Text = GetIssueCountByDayRange(dtStart2.Value.Date, dtEnd2.Value.Date).ToString();
+        }
+
+        private void dtStart2_ValueChanged(object sender, EventArgs e)
+        {
+            //tbPeriod2GetIssueCount();
+        }
+        private void dtEnd2_ValueChanged(object sender, EventArgs e)
+        {
+            //tbPeriod2GetIssueCount();
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //if (tabControl1.SelectedTab == tabControl1.TabPages["tabPage2"])//your specific tabname
+            //{
+            //    tabPage2.Controls.Add(dtStart2);
+            //    tabPage2.Controls.Add(dtEnd2);
+                //DateTime temp = GetDayByIssueCount(7, dtEnd.Value.Date);
+                //dtStart2.Value = temp;
+            //}
         }
     }
 }
