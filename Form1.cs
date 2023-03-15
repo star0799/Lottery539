@@ -405,6 +405,32 @@ namespace Lottery539
             log.WriteLog("匯入資料2完成...");
             var queryDatas = datas.Where(d => Convert.ToDateTime(d.LotteryDate).Date >= dtStart2.Value.Date && Convert.ToDateTime(d.LotteryDate).Date <= dtEnd2.Value.Date).ToList();
             tbPeriod2.Text=queryDatas.Count.ToString();
+            int mapCount=0;
+            bool isMap = false;
+            for(int i=0;i< datas.Count; i++)
+            {
+                for(int j=0;j< queryDatas.Count; j++)
+                {
+                    if (!isMap)
+                    {
+                        var numbers = queryDatas[j].Numbers.Split(',');
+                        for (int k = 0; k < numbers.Length; k++)
+                        {
+                            if (datas[i].Numbers.Contains(numbers[k]))
+                            {
+                                mapCount++;
+                                isMap = true;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        isMap = false;
+                        break;
+                    }
+                }
+            }
         }
         private void ReloadListView2()
         {
