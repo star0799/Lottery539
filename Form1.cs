@@ -435,22 +435,25 @@ namespace Lottery539
                             isMatch = false;
                             break; // 一旦有不符合的數字就跳出迴圈
                         }
-                    LotteryData tempLotteryData = new LotteryData();
-                    tempLotteryData.Issue = AllDatas[i + j].Issue;
-                    tempLotteryData.Numbers = AllDatas[i + j].Numbers;
-                    tempLotteryData.LotteryDate = AllDatas[i + j].LotteryDate;
-                    tempLotteryData.PointNumbers = getMatchedNumbers;
+                    LotteryData tempLotteryData = new LotteryData()
+                    {
+                        Issue = AllDatas[i + j].Issue,
+                        Numbers = AllDatas[i + j].Numbers,
+                        LotteryDate = AllDatas[i + j].LotteryDate,
+                        PointNumbers = getMatchedNumbers
+                    };
                     tempList.Add(tempLotteryData);                    
                 }
 
                 if (isMatch)
                 {
-                    LotteryCompareLotteryData data = new LotteryCompareLotteryData();
-                    foreach (var l in tempList)
-                        data.Datas.Add(l);
-                    data.NextLotteryDate = AllDatas[i + BenchMark.Count].LotteryDate;
-                    data.NextIssue=AllDatas[i + BenchMark.Count].Issue;
-                    data.NextNumbers=AllDatas[i + BenchMark.Count].Numbers;
+                    LotteryCompareLotteryData data = new LotteryCompareLotteryData()
+                    {
+                        Datas = tempList.ToList(),
+                        NextLotteryDate = AllDatas[i + BenchMark.Count].LotteryDate,
+                        NextIssue = AllDatas[i + BenchMark.Count].Issue,
+                        NextNumbers = AllDatas[i + BenchMark.Count].Numbers
+                    };
                     result.Add(data);                         
                 }
                 tempList.Clear();
@@ -459,22 +462,20 @@ namespace Lottery539
         }
         private static bool IsNumberMatch(string numbersA, string numbersB, out string matchedNumbers)
         {
-            matchedNumbers = String.Empty;
             var numListA = numbersA.Split(',');
             var numListB = numbersB.Split(',');
-            foreach (var numA in numListA)
+            var matchedNumList = numListA.Intersect(numListB);
+
+            if (matchedNumList.Any())
             {
-                foreach (var numB in numListB)
-                {
-                    if (numA == numB)
-                    {
-                        matchedNumbers += numA+",";                       
-                    }
-                }
+                matchedNumbers = string.Join(",", matchedNumList);
+                return true;
             }
-            if(matchedNumbers.Length > 0)
-               matchedNumbers = matchedNumbers.Substring(0, matchedNumbers.Length - 1);
-            return matchedNumbers.Length > 0;
+            else
+            {
+                matchedNumbers = string.Empty;
+                return false;
+            }
         }
 
         private void ReloadListView2()
