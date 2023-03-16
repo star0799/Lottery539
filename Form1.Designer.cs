@@ -263,7 +263,7 @@
             this.lb1.Font = new System.Drawing.Font("新細明體", 12F);
             this.lb1.Location = new System.Drawing.Point(1166, 6);
             this.lb1.Name = "lb1";
-            this.lb1.Size = new System.Drawing.Size(103, 16);
+            this.lb1.Size = new System.Drawing.Size(104, 16);
             this.lb1.TabIndex = 52;
             this.lb1.Text = "現在選擇號碼";
             // 
@@ -338,6 +338,7 @@
             this.btnUpdate2.TabIndex = 41;
             this.btnUpdate2.Text = "更新";
             this.btnUpdate2.UseVisualStyleBackColor = true;
+            this.btnUpdate2.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
             // lvDetail2
             // 

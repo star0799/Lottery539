@@ -450,9 +450,9 @@ namespace Lottery539
                     LotteryCompareLotteryData data = new LotteryCompareLotteryData()
                     {
                         Datas = tempList.ToList(),
-                        NextLotteryDate = AllDatas[i + BenchMark.Count].LotteryDate,
-                        NextIssue = AllDatas[i + BenchMark.Count].Issue,
-                        NextNumbers = AllDatas[i + BenchMark.Count].Numbers
+                        NextLotteryDate = AllDatas[i -1].LotteryDate,
+                        NextIssue = AllDatas[i - 1].Issue,
+                        NextNumbers = AllDatas[i - 1].Numbers
                     };
                     result.Add(data);                         
                 }
