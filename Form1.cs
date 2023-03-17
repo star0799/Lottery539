@@ -399,14 +399,28 @@ namespace Lottery539
 
                 if (isMatch)
                 {
-                    LotteryCompareLotteryData data = new LotteryCompareLotteryData()
+                    if (i == 0)
                     {
-                        Datas = tempList.ToList(),
-                        NextLotteryDate = AllDatas[i -1].LotteryDate,
-                        NextIssue = AllDatas[i - 1].Issue,
-                        NextNumbers = AllDatas[i - 1].Numbers
-                    };
-                    result.Add(data);                         
+                        LotteryCompareLotteryData data = new LotteryCompareLotteryData()
+                        {
+                            Datas = tempList.ToList(),
+                            NextLotteryDate = "未開獎",
+                            NextIssue = "未開獎",
+                            NextNumbers = "未開獎"
+                        };
+                        result.Add(data);
+                    }
+                    else
+                    {
+                        LotteryCompareLotteryData data = new LotteryCompareLotteryData()
+                        {
+                            Datas = tempList.ToList(),
+                            NextLotteryDate = AllDatas[i - 1].LotteryDate,
+                            NextIssue = AllDatas[i - 1].Issue,
+                            NextNumbers = AllDatas[i - 1].Numbers
+                        };
+                        result.Add(data);
+                    }                        
                 }
                 tempList.Clear();
             }
