@@ -310,10 +310,15 @@ namespace Lottery539
             while (day != endDay)
             {
                 if (day.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    day = day.AddDays(1);
                     continue;
+                }
                 else
+                {
                     result++;
-                day.AddDays(1);
+                    day = day.AddDays(1);
+                }
             }
             return result;
         }
@@ -409,10 +414,17 @@ namespace Lottery539
             tbPeriod2.Text=queryDatas.Count.ToString();
             foreach (var queryData in queryDatas)
                 tbResult2.Text += queryData.Numbers + Environment.NewLine;
-            var result = CompareLotteryData(datas, queryDatas);
-            lotteryCompareLotteryDatas=result;
-            foreach (var d in result)
-               lvResult2.Items.Add(new ListViewItem(new string[] { d.NextIssue,d.NextLotteryDate,d.NextNumbers }));
+            if (queryDatas.Count > 0)
+            {
+                var result = CompareLotteryData(datas, queryDatas);
+                lotteryCompareLotteryDatas = result;
+                foreach (var d in result)
+                    lvResult2.Items.Add(new ListViewItem(new string[] { d.NextIssue, d.NextLotteryDate, d.NextNumbers }));
+            }
+            else
+            {
+                MessageBox.Show("選擇的日期區間沒有資料");
+            }
         }
         private List<LotteryCompareLotteryData> CompareLotteryData(List<LotteryData> AllDatas, List<LotteryData> BenchMark)
         {
@@ -496,14 +508,12 @@ namespace Lottery539
             lvDetail2.Columns.Add("期號", 200);
             lvDetail2.Columns.Add("日期", 300);
             lvDetail2.Columns.Add("號碼", 300);
-            lvDetail2.Columns.Add("中獎號", 200);
-            //lvNumResult.Columns.Add("熱門號", 600);
-            //lvNumResult.Columns.Add("支數", 80);
+            //lvDetail2.Columns.Add("中獎號", 200);
         }
-        private void tbPeriod2GetIssueCount()
-        {
-            tbPeriod2.Text = GetIssueCountByDayRange(dtStart2.Value.Date, dtEnd2.Value.Date).ToString();
-        }
+        //private void tbPeriod2GetIssueCount()
+        //{
+        //    tbPeriod2.Text = GetIssueCountByDayRange(dtStart2.Value.Date, dtEnd2.Value.Date).ToString();
+        //}
 
         private void dtStart2_ValueChanged(object sender, EventArgs e)
         {
@@ -516,13 +526,17 @@ namespace Lottery539
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //if (tabControl1.SelectedTab == tabControl1.TabPages["tabPage2"])//your specific tabname
-            //{
-            //    tabPage2.Controls.Add(dtStart2);
-            //    tabPage2.Controls.Add(dtEnd2);
-                //DateTime temp = GetDayByIssueCount(7, dtEnd.Value.Date);
-                //dtStart2.Value = temp;
-            //}
+            if (tabControl1.SelectedTab == tabControl1.TabPages["tabPage1"])//your specific tabname
+            {
+                ReloadListView();
+            }
+            else if (tabControl1.SelectedTab == tabControl1.TabPages["tabPage2"])//your specific tabname
+            {
+                ReloadListView2();
+                dtStart2.Value  = GetDayByIssueCount(5, dtEnd.Value.Date); // 設定起始日期
+                dtEnd2.Value = DateTime.Now.Date;              
+                //tbPeriod2GetIssueCount();
+            }
         }
 
         private void lvResult2_SelectedIndexChanged(object sender, EventArgs e)
@@ -535,11 +549,42 @@ namespace Lottery539
 
                 // 清空明細表中的項目
                 lvDetail2.Items.Clear();
-                var data=lotteryCompareLotteryDatas.Where(w => w.NextIssue == selectedID).Select(x => x.Datas).FirstOrDefault();
-                foreach(var d in data)
-                // 加載對應的明細資料到明細表中
-                lvDetail2.Items.Add(new ListViewItem(new string[] { d.Issue, d.LotteryDate, d.Numbers,d.PointNumbers }));
+                var data = lotteryCompareLotteryDatas.Where(w => w.NextIssue == selectedID).Select(x => x.Datas).FirstOrDefault();
+                foreach (var d in data)
+                {
+                    // 建立一個新的 RichTextBox 控制項
+                    RichTextBox rtb = new RichTextBox();
 
+                    // 判斷 Numbers 中是否包含 PointNumbers 中的數字，如果包含就將該數字標紅色
+                    string[] numbers = d.Numbers.Split(',');
+                    string[] pointNumbers = d.PointNumbers.Split(',');
+                    for (int i = 0; i < numbers.Length; i++)
+                    {
+                        if (pointNumbers.Contains(numbers[i]))
+                        {
+                            // 將紅色文字加入到 RichTextBox 中
+                            rtb.AppendText(numbers[i]);
+                            rtb.Select(rtb.TextLength - numbers[i].Length, numbers[i].Length);
+                            rtb.SelectionColor = Color.Red;
+                        }
+                        else
+                        {
+                            // 將黑色文字加入到 RichTextBox 中
+                            rtb.AppendText(numbers[i]);
+                        }
+
+                        // 如果還有下一個數字，就加上逗號
+                        if (i < numbers.Length - 1)
+                        {
+                            rtb.AppendText(",");
+                        }
+                    }
+
+                    // 將修改後的文字加入到 ListViewItem 中
+                    ListViewItem li = new ListViewItem(new string[] { d.Issue, d.LotteryDate });
+                    li.SubItems.Add(new ListViewItem.ListViewSubItem(li, rtb.Text, Color.Black, Color.Empty, li.Font));
+                    lvDetail2.Items.Add(li);
+                }
             }
         }
     }

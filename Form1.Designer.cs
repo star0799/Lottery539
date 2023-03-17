@@ -53,8 +53,8 @@
             this.label6 = new System.Windows.Forms.Label();
             this.btnQuery2 = new System.Windows.Forms.Button();
             this.btnUpdate2 = new System.Windows.Forms.Button();
-            this.lvDetail2 = new System.Windows.Forms.ListView();
             this.lvResult2 = new System.Windows.Forms.ListView();
+            this.lvDetail2 = new System.Windows.Forms.ListView();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -72,7 +72,6 @@
             this.tabControl1.Size = new System.Drawing.Size(1457, 757);
             this.tabControl1.TabIndex = 28;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
-            this.tabControl1.Click += new System.EventHandler(this.btnQuery_Click);
             // 
             // tabPage1
             // 
@@ -263,7 +262,7 @@
             this.lb1.Font = new System.Drawing.Font("新細明體", 12F);
             this.lb1.Location = new System.Drawing.Point(1166, 6);
             this.lb1.Name = "lb1";
-            this.lb1.Size = new System.Drawing.Size(104, 16);
+            this.lb1.Size = new System.Drawing.Size(103, 16);
             this.lb1.TabIndex = 52;
             this.lb1.Text = "現在選擇號碼";
             // 
@@ -340,16 +339,6 @@
             this.btnUpdate2.UseVisualStyleBackColor = true;
             this.btnUpdate2.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
-            // lvDetail2
-            // 
-            this.lvDetail2.Font = new System.Drawing.Font("新細明體", 12F);
-            this.lvDetail2.HideSelection = false;
-            this.lvDetail2.Location = new System.Drawing.Point(3, 475);
-            this.lvDetail2.Name = "lvDetail2";
-            this.lvDetail2.Size = new System.Drawing.Size(1152, 248);
-            this.lvDetail2.TabIndex = 32;
-            this.lvDetail2.UseCompatibleStateImageBehavior = false;
-            // 
             // lvResult2
             // 
             this.lvResult2.Font = new System.Drawing.Font("新細明體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
@@ -360,6 +349,16 @@
             this.lvResult2.TabIndex = 31;
             this.lvResult2.UseCompatibleStateImageBehavior = false;
             this.lvResult2.SelectedIndexChanged += new System.EventHandler(this.lvResult2_SelectedIndexChanged);
+            // 
+            // lvDetail2
+            // 
+            this.lvDetail2.Font = new System.Drawing.Font("新細明體", 12F);
+            this.lvDetail2.HideSelection = false;
+            this.lvDetail2.Location = new System.Drawing.Point(3, 475);
+            this.lvDetail2.Name = "lvDetail2";
+            this.lvDetail2.Size = new System.Drawing.Size(1152, 248);
+            this.lvDetail2.TabIndex = 32;
+            this.lvDetail2.UseCompatibleStateImageBehavior = false;
             // 
             // Form1
             // 
@@ -399,7 +398,6 @@
         private System.Windows.Forms.Button btnQuery;
         private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.ListView lvDetail2;
         private System.Windows.Forms.ListView lvResult2;
         private System.Windows.Forms.Label lb1;
         private System.Windows.Forms.TextBox tbResult2;
@@ -409,6 +407,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button btnQuery2;
         private System.Windows.Forms.Button btnUpdate2;
+        private System.Windows.Forms.ListView lvDetail2;
     }
 }
 
