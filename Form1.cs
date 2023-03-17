@@ -506,8 +506,12 @@ namespace Lottery539
             lvDetail2.GridLines = true;
             lvDetail2.FullRowSelect = true;
             lvDetail2.Columns.Add("期號", 200);
-            lvDetail2.Columns.Add("日期", 300);
-            lvDetail2.Columns.Add("號碼", 300);
+            lvDetail2.Columns.Add("日期", 300);           
+            lvDetail2.Columns.Add("", 30);
+            lvDetail2.Columns.Add("", 30);
+            lvDetail2.Columns.Add("", 30);
+            lvDetail2.Columns.Add("", 30);
+            lvDetail2.Columns.Add("", 30);
             //lvDetail2.Columns.Add("中獎號", 200);
         }
         //private void tbPeriod2GetIssueCount()
@@ -543,47 +547,38 @@ namespace Lottery539
         {
             if (lvResult2.SelectedItems.Count > 0)
             {
-                // 獲取總表選中的項目
+                // 獲取總表選中的項目 
                 var selectedItem = lvResult2.SelectedItems[0];
                 var selectedID = selectedItem.SubItems[0].Text;
 
-                // 清空明細表中的項目
+                // 清空明細表中的項目 
                 lvDetail2.Items.Clear();
                 var data = lotteryCompareLotteryDatas.Where(w => w.NextIssue == selectedID).Select(x => x.Datas).FirstOrDefault();
                 foreach (var d in data)
                 {
-                    // 建立一個新的 RichTextBox 控制項
-                    RichTextBox rtb = new RichTextBox();
-
-                    // 判斷 Numbers 中是否包含 PointNumbers 中的數字，如果包含就將該數字標紅色
                     string[] numbers = d.Numbers.Split(',');
                     string[] pointNumbers = d.PointNumbers.Split(',');
-                    for (int i = 0; i < numbers.Length; i++)
+
+                    // 產生明細資料
+                    var listViewItem = new ListViewItem(new string[] { d.Issue, d.LotteryDate });
+                    listViewItem.UseItemStyleForSubItems = false;
+                    for (int i = 0; i < 5; i++)
                     {
-                        if (pointNumbers.Contains(numbers[i]))
+                        var number = numbers[i];
+                        var isPointNumber = pointNumbers.Contains(number);
+
+                        if (isPointNumber)
                         {
-                            // 將紅色文字加入到 RichTextBox 中
-                            rtb.AppendText(numbers[i]);
-                            rtb.Select(rtb.TextLength - numbers[i].Length, numbers[i].Length);
-                            rtb.SelectionColor = Color.Red;
+                            // 將對應欄位的文字設為紅色
+                            listViewItem.SubItems.Add(new ListViewItem.ListViewSubItem(listViewItem, number, Color.Red, Color.Empty, lvDetail2.Font) { Font = new Font(lvDetail2.Font, FontStyle.Bold) });
                         }
                         else
                         {
-                            // 將黑色文字加入到 RichTextBox 中
-                            rtb.AppendText(numbers[i]);
-                        }
-
-                        // 如果還有下一個數字，就加上逗號
-                        if (i < numbers.Length - 1)
-                        {
-                            rtb.AppendText(",");
+                            // 將對應欄位的文字設為黑色
+                            listViewItem.SubItems.Add(new ListViewItem.ListViewSubItem(listViewItem, number));
                         }
                     }
-
-                    // 將修改後的文字加入到 ListViewItem 中
-                    ListViewItem li = new ListViewItem(new string[] { d.Issue, d.LotteryDate });
-                    li.SubItems.Add(new ListViewItem.ListViewSubItem(li, rtb.Text, Color.Black, Color.Empty, li.Font));
-                    lvDetail2.Items.Add(li);
+                    lvDetail2.Items.Add(listViewItem);
                 }
             }
         }
