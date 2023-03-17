@@ -53,7 +53,6 @@ namespace Lottery539
             ReadFile readFile = new ReadFile();
             datas = readFile.ReadTxtFile();
             log.WriteLog("匯入資料完成...");
-            //int IssueCount = Convert.ToInt16(tbLotteryType.Text);
             Dictionary<string, int> groupNum = new Dictionary<string, int>();
             int MaxVal =0;
             int MinVal = 0;
@@ -102,8 +101,6 @@ namespace Lottery539
             string coldNumString = string.Empty;
             string hotPointNumString = string.Empty;
             string coldPointNumString = string.Empty;
-            //string hotPointCount = string.Empty;
-            //string coldPointCount = string.Empty;
             horNumString = helpers.GetNumString(hotNums);
             coldNumString = helpers.GetNumString(coldNums);
             foreach (var d in queryDatas)
@@ -132,57 +129,8 @@ namespace Lottery539
             tbLotteryType.Text = queryDatas.Count.ToString() ;
             lvNumResult.Items.Add(new ListViewItem(new string[] { horNumString, hotNums.Count.ToString(), coldNumString, coldNums.Count.ToString() }));
         }
-        //private Dictionary<string, int> GetGroupNum(List<LotteryData> datas)
-        //{
-        //    List<int> intlist = new List<int>();
-        //    Dictionary<string, int> keyValues = new Dictionary<string, int>();
-        //    string tmpString = string.Empty;
-
-        //    datas = datas.Take(datas.Count()).ToList();
-        //    foreach (var d in datas)
-        //        tmpString += d.Numbers + ",";
-        //    tmpString = tmpString.Substring(0, tmpString.Length - 1);
-        //    var numList = tmpString.Split(',');
-
-        //    foreach (var n in numList)
-        //    {
-        //        intlist.Add(Convert.ToInt32(n));
-        //    }
-        //    var q = from p in intlist
-        //            group p by p.ToString() into g
-        //            select new
-        //            {
-        //                g.Key,
-        //                Value = g.Count()
-        //            };
-
-
-        //    foreach (var x in q)
-        //    {
-        //        string key = "";
-        //        if (Convert.ToInt32(x.Key) < 10)
-        //            key = "0" + x.Key;
-        //        else
-        //            key = x.Key;
-        //        keyValues.Add(key, x.Value);
-        //    }
-
-        //    for (int i = 1; i <= 39; i++)
-        //    {
-        //        string key = "";
-        //        if (Convert.ToInt32(i) < 10)
-        //            key = "0" + i;
-        //        else
-        //            key = i.ToString();
-        //        if (!keyValues.ContainsKey(key))
-        //            keyValues.Add(key, 0);
-        //    }
-        //    Dictionary<string, int> result = keyValues.OrderBy(o => Convert.ToInt32(o.Key)).ToDictionary(o => o.Key, p => p.Value);
-        //    return result;
-        //}
         private Dictionary<string, int> GetGroupNum(List<LotteryData> datas)
         {
-            //datas=datas.Skip(1).ToList();
             var intlist = datas.SelectMany(d => d.Numbers.Split(',').Select(int.Parse));
             var keyValues = intlist.GroupBy(n => n, new NumberEqualityComparer())
                                    .ToDictionary(g => g.Key.ToString("D2"), g => g.Count()).OrderBy(o => Convert.ToInt32(o.Key)).ToDictionary(o => o.Key, p => p.Value);
@@ -212,9 +160,7 @@ namespace Lottery539
             lvShow.Columns.Add("日期", 300);
             lvShow.Columns.Add("開獎號碼", 400);
             lvShow.Columns.Add("當期開出熱門號", 300);
-            //lvShow.Columns.Add("熱門號數量", 150);
             lvShow.Columns.Add("當期開出冷門號", 300);
-            //lvShow.Columns.Add("冷門號數量",150);
 
             lvStatistics.View = View.Details;
             lvStatistics.GridLines = true;
@@ -383,11 +329,6 @@ namespace Lottery539
                 return true;
             }
         }
-        //private List<LotteryData> MergeList(List<LotteryData> datas, LotteryData d)
-        //{
-        //    datas.Add(d);
-        //    return datas;
-        //}
 
         private void dtStart_ValueChanged(object sender, EventArgs e)
         {
@@ -418,8 +359,7 @@ namespace Lottery539
             {
                 var result = CompareLotteryData(datas, queryDatas);
                 lotteryCompareLotteryDatas = result;
-                foreach (var d in result)
-                    lvResult2.Items.Add(new ListViewItem(new string[] { d.NextIssue, d.NextLotteryDate, d.NextNumbers }));
+                lvResult2.Items.AddRange(result.Select(d => new ListViewItem(new[] { d.NextIssue, d.NextLotteryDate, d.NextNumbers })).ToArray());
             }
             else
             {
@@ -507,17 +447,12 @@ namespace Lottery539
             lvDetail2.FullRowSelect = true;
             lvDetail2.Columns.Add("期號", 200);
             lvDetail2.Columns.Add("日期", 300);           
-            lvDetail2.Columns.Add("", 30);
-            lvDetail2.Columns.Add("", 30);
-            lvDetail2.Columns.Add("", 30);
-            lvDetail2.Columns.Add("", 30);
-            lvDetail2.Columns.Add("", 30);
-            //lvDetail2.Columns.Add("中獎號", 200);
+            lvDetail2.Columns.Add("", 40);
+            lvDetail2.Columns.Add("", 40);
+            lvDetail2.Columns.Add("", 40);
+            lvDetail2.Columns.Add("", 40);
+            lvDetail2.Columns.Add("", 40);
         }
-        //private void tbPeriod2GetIssueCount()
-        //{
-        //    tbPeriod2.Text = GetIssueCountByDayRange(dtStart2.Value.Date, dtEnd2.Value.Date).ToString();
-        //}
 
         private void dtStart2_ValueChanged(object sender, EventArgs e)
         {

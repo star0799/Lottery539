@@ -53,8 +53,8 @@
             this.label6 = new System.Windows.Forms.Label();
             this.btnQuery2 = new System.Windows.Forms.Button();
             this.btnUpdate2 = new System.Windows.Forms.Button();
-            this.lvResult2 = new System.Windows.Forms.ListView();
             this.lvDetail2 = new System.Windows.Forms.ListView();
+            this.lvResult2 = new System.Windows.Forms.ListView();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -66,6 +66,7 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Font = new System.Drawing.Font("新細明體", 13F);
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -76,12 +77,12 @@
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.panel1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Location = new System.Drawing.Point(4, 27);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1449, 731);
+            this.tabPage1.Size = new System.Drawing.Size(1449, 726);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "冷熱門";
+            this.tabPage1.Text = "冷熱表";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // panel1
@@ -102,7 +103,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1443, 725);
+            this.panel1.Size = new System.Drawing.Size(1443, 720);
             this.panel1.TabIndex = 0;
             // 
             // tbLotteryType
@@ -248,12 +249,12 @@
             this.tabPage2.Controls.Add(this.btnUpdate2);
             this.tabPage2.Controls.Add(this.lvDetail2);
             this.tabPage2.Controls.Add(this.lvResult2);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Location = new System.Drawing.Point(4, 27);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1449, 731);
+            this.tabPage2.Size = new System.Drawing.Size(1449, 726);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "第二頁";
+            this.tabPage2.Text = "開獎紀錄回測";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // lb1
@@ -268,7 +269,7 @@
             // 
             // tbResult2
             // 
-            this.tbResult2.Font = new System.Drawing.Font("新細明體", 12F);
+            this.tbResult2.Font = new System.Drawing.Font("新細明體", 14F);
             this.tbResult2.Location = new System.Drawing.Point(1169, 30);
             this.tbResult2.Multiline = true;
             this.tbResult2.Name = "tbResult2";
@@ -289,7 +290,7 @@
             // 
             this.dtEnd2.CalendarFont = new System.Drawing.Font("新細明體", 14F);
             this.dtEnd2.Font = new System.Drawing.Font("新細明體", 12F);
-            this.dtEnd2.Location = new System.Drawing.Point(1314, 530);
+            this.dtEnd2.Location = new System.Drawing.Point(1314, 492);
             this.dtEnd2.Name = "dtEnd2";
             this.dtEnd2.Size = new System.Drawing.Size(135, 27);
             this.dtEnd2.TabIndex = 49;
@@ -299,7 +300,7 @@
             // 
             this.dtStart2.CalendarFont = new System.Drawing.Font("新細明體", 14F);
             this.dtStart2.Font = new System.Drawing.Font("新細明體", 12F);
-            this.dtStart2.Location = new System.Drawing.Point(1169, 530);
+            this.dtStart2.Location = new System.Drawing.Point(1169, 492);
             this.dtStart2.Name = "dtStart2";
             this.dtStart2.Size = new System.Drawing.Size(136, 27);
             this.dtStart2.TabIndex = 48;
@@ -339,6 +340,16 @@
             this.btnUpdate2.UseVisualStyleBackColor = true;
             this.btnUpdate2.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
+            // lvDetail2
+            // 
+            this.lvDetail2.Font = new System.Drawing.Font("新細明體", 14F);
+            this.lvDetail2.HideSelection = false;
+            this.lvDetail2.Location = new System.Drawing.Point(3, 475);
+            this.lvDetail2.Name = "lvDetail2";
+            this.lvDetail2.Size = new System.Drawing.Size(1152, 248);
+            this.lvDetail2.TabIndex = 32;
+            this.lvDetail2.UseCompatibleStateImageBehavior = false;
+            // 
             // lvResult2
             // 
             this.lvResult2.Font = new System.Drawing.Font("新細明體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
@@ -350,16 +361,6 @@
             this.lvResult2.UseCompatibleStateImageBehavior = false;
             this.lvResult2.SelectedIndexChanged += new System.EventHandler(this.lvResult2_SelectedIndexChanged);
             // 
-            // lvDetail2
-            // 
-            this.lvDetail2.Font = new System.Drawing.Font("新細明體", 12F);
-            this.lvDetail2.HideSelection = false;
-            this.lvDetail2.Location = new System.Drawing.Point(3, 475);
-            this.lvDetail2.Name = "lvDetail2";
-            this.lvDetail2.Size = new System.Drawing.Size(1152, 248);
-            this.lvDetail2.TabIndex = 32;
-            this.lvDetail2.UseCompatibleStateImageBehavior = false;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -367,7 +368,7 @@
             this.ClientSize = new System.Drawing.Size(1457, 757);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "539";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
