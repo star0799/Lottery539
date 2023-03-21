@@ -110,6 +110,7 @@
     <Compile Include="Helpers.cs" />
     <Compile Include="log.cs" />
     <Compile Include="LotteryData.cs" />
+    <Compile Include="Model\LotteryCompareLotteryData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadFile.cs" />
@@ -142,8 +143,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
