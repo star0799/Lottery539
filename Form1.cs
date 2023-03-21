@@ -5,8 +5,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -18,6 +21,13 @@ namespace Lottery539
         Helpers helpers = new Helpers();
         List<LotteryData> datas = new List<LotteryData>();
         List<LotteryCompareLotteryData> lotteryCompareLotteryDatas = new List<LotteryCompareLotteryData>();
+        private string ftpServer = "ftp://192.168.1.176";
+        private string ftpUsername = "star";
+        private string ftpPassword = "star";
+
+
+        // 定時器
+        private System.Threading.Timer timer;
         public Form1()
         {
             InitializeComponent();
@@ -145,8 +155,71 @@ namespace Lottery539
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            // 每小時執行一次定時器事件
+            int interval = 1000 * 60 * 60; // 1000 毫秒 * 60 秒 * 60 分鐘 = 1 小時
+            timer = new System.Threading.Timer(new TimerCallback(timer_Elapsed), null, 0, interval);
             dtStart.Value=GetDayByIssueCount(48, dtEnd.Value.Date);
             ReloadListView();
+        }
+        private void timer_Elapsed(object state)
+        {
+            // 取得當前版本號
+            string currentVersion = File.ReadAllText("version.txt");
+
+            // 執行查找 FTP 檔案的程式碼
+            FtpWebRequest request = (FtpWebRequest)WebRequest.Create(ftpServer);
+            request.Method = WebRequestMethods.Ftp.ListDirectory;
+            request.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
+
+            FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+            Stream responseStream = response.GetResponseStream();
+            StreamReader reader = new StreamReader(responseStream);
+
+            string line = reader.ReadLine();
+            string latestVersion = null;
+            while (line != null)
+            {
+                // 檢查是否有新版本
+                if (line.StartsWith("20") && line.Length == 11)
+                {
+                    if (latestVersion == null || string.CompareOrdinal(latestVersion, line) < 0)
+                    {
+                        latestVersion = line;
+                    }
+                }
+                line = reader.ReadLine();
+            }
+
+            reader.Close();
+            response.Close();
+
+            if (latestVersion != null && latestVersion != currentVersion)
+            {
+                // 下載最新版本的檔案
+                string ftpPath = ftpServer + "/" + latestVersion;
+                FtpWebRequest downloadRequest = (FtpWebRequest)WebRequest.Create(ftpPath + "/Lottery539.exe");
+                downloadRequest.Method = WebRequestMethods.Ftp.DownloadFile;
+                downloadRequest.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
+                FtpWebResponse downloadResponse = (FtpWebResponse)downloadRequest.GetResponse();
+                Stream downloadStream = downloadResponse.GetResponseStream();
+                FileStream fileStream = new FileStream("Lottery539.exe", FileMode.Create);
+                byte[] buffer = new byte[1024];
+                int bytesRead = downloadStream.Read(buffer, 0, buffer.Length);
+                while (bytesRead > 0)
+                {
+                    fileStream.Write(buffer, 0, bytesRead);
+                    bytesRead = downloadStream.Read(buffer, 0, buffer.Length);
+                }
+                fileStream.Close();
+                downloadStream.Close();
+                downloadResponse.Close();
+
+                // 更新版本號
+                File.WriteAllText("version.txt", latestVersion);
+
+                // 重新啟動程式
+                Application.Restart();
+            }
         }
         private void ReloadListView()
         {
