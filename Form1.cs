@@ -399,6 +399,7 @@ namespace Lottery539
 
                 if (isMatch)
                 {
+                    string benchmarkNumbers = String.Join(":", BenchMark.Select(b => b.Numbers));
                     if (i == 0)
                     {
                         LotteryCompareLotteryData data = new LotteryCompareLotteryData()
@@ -406,7 +407,8 @@ namespace Lottery539
                             Datas = tempList.ToList(),
                             NextLotteryDate = "未開獎",
                             NextIssue = "未開獎",
-                            NextNumbers = "未開獎"
+                            NextNumbers = "未開獎",
+                            BenchmarkNumbers = benchmarkNumbers
                         };
                         result.Add(data);
                     }
@@ -417,7 +419,8 @@ namespace Lottery539
                             Datas = tempList.ToList(),
                             NextLotteryDate = AllDatas[i - 1].LotteryDate,
                             NextIssue = AllDatas[i - 1].Issue,
-                            NextNumbers = AllDatas[i - 1].Numbers
+                            NextNumbers = AllDatas[i - 1].Numbers,
+                            BenchmarkNumbers = benchmarkNumbers
                         };
                         result.Add(data);
                     }                        
@@ -466,6 +469,7 @@ namespace Lottery539
             lvDetail2.Columns.Add("", 40);
             lvDetail2.Columns.Add("", 40);
             lvDetail2.Columns.Add("", 40);
+            lotteryCompareLotteryDatas.Clear();
         }
 
         private void dtStart2_ValueChanged(object sender, EventArgs e)
@@ -528,6 +532,49 @@ namespace Lottery539
                         }
                     }
                     lvDetail2.Items.Add(listViewItem);
+                }
+                    string benchmarkNumbers = lotteryCompareLotteryDatas.Where(w => w.NextIssue == selectedID).FirstOrDefault().BenchmarkNumbers;
+                    tbResult2.Text = benchmarkNumbers.Replace(":", Environment.NewLine);                
+            }
+        }
+
+        private void btnQueryAll_Click(object sender, EventArgs e)
+        {
+            ReloadListView2();
+            tbResult2.Text = "";
+            log.WriteLog("匯入資料2 All開始...");
+            ReadFile readFile = new ReadFile();
+            datas = readFile.ReadTxtFile();
+            log.WriteLog("匯入資料2 All完成...");
+             CompareAllLotteryData();
+            lotteryCompareLotteryDatas = lotteryCompareLotteryDatas.OrderByDescending(x=>x.NextIssue).ToList();
+             lvResult2.Items.AddRange(lotteryCompareLotteryDatas.Select(d => new ListViewItem(new[] { d.NextIssue, d.NextLotteryDate, d.NextNumbers })).ToArray());
+        }
+        private void CompareAllLotteryData()
+        {
+            lotteryCompareLotteryDatas = new List<LotteryCompareLotteryData>();
+
+            List<LotteryCompareLotteryData> tempResult = new List<LotteryCompareLotteryData>();
+            int range = 0;
+            try
+            {
+                range = Convert.ToInt16(tbPeriod2.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("請輸入正整數");
+                return;
+            }
+            for (int i = 0; i < datas.Count; i++)
+            {
+                if(i+ range> datas.Count)
+                {
+                    break;
+                }
+                tempResult = CompareLotteryData(datas, datas.GetRange(i, range));
+                if (tempResult.Count > 0)
+                {
+                    lotteryCompareLotteryDatas.AddRange(tempResult);
                 }
             }
         }
