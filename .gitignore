@@ -41,6 +41,7 @@ x64/
 */**/obj/Debug
 */**/obj/Release
 bin/
+obj/
 
 # Visual C++ cache files
 ipch/

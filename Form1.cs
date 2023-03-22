@@ -523,7 +523,7 @@ namespace Lottery539
                     for (int i = 0; i < 5; i++)
                     {
                         var number = numbers[i];
-                        var isPointNumber = pointNumbers.Contains(number);
+                        var isPointNumber = pointNumbers.Contains(number); 
 
                         if (isPointNumber)
                         {
