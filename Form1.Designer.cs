@@ -45,8 +45,8 @@
             this.btnQuery = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.btnQueryAll = new System.Windows.Forms.Button();
             this.lb1 = new System.Windows.Forms.Label();
-            this.tbResult2 = new System.Windows.Forms.TextBox();
             this.tbPeriod2 = new System.Windows.Forms.TextBox();
             this.dtEnd2 = new System.Windows.Forms.DateTimePicker();
             this.dtStart2 = new System.Windows.Forms.DateTimePicker();
@@ -55,7 +55,7 @@
             this.btnUpdate2 = new System.Windows.Forms.Button();
             this.lvDetail2 = new System.Windows.Forms.ListView();
             this.lvResult2 = new System.Windows.Forms.ListView();
-            this.btnQueryAll = new System.Windows.Forms.Button();
+            this.lvBenchmark = new System.Windows.Forms.ListView();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -240,9 +240,9 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.lvBenchmark);
             this.tabPage2.Controls.Add(this.btnQueryAll);
             this.tabPage2.Controls.Add(this.lb1);
-            this.tabPage2.Controls.Add(this.tbResult2);
             this.tabPage2.Controls.Add(this.tbPeriod2);
             this.tabPage2.Controls.Add(this.dtEnd2);
             this.tabPage2.Controls.Add(this.dtStart2);
@@ -259,24 +259,27 @@
             this.tabPage2.Text = "開獎紀錄回測";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // btnQueryAll
+            // 
+            this.btnQueryAll.Font = new System.Drawing.Font("新細明體", 14F);
+            this.btnQueryAll.Location = new System.Drawing.Point(1240, 682);
+            this.btnQueryAll.Name = "btnQueryAll";
+            this.btnQueryAll.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.btnQueryAll.Size = new System.Drawing.Size(123, 38);
+            this.btnQueryAll.TabIndex = 53;
+            this.btnQueryAll.Text = "查詢全部";
+            this.btnQueryAll.UseVisualStyleBackColor = true;
+            this.btnQueryAll.Click += new System.EventHandler(this.btnQueryAll_Click);
+            // 
             // lb1
             // 
             this.lb1.AutoSize = true;
             this.lb1.Font = new System.Drawing.Font("新細明體", 12F);
-            this.lb1.Location = new System.Drawing.Point(1166, 6);
+            this.lb1.Location = new System.Drawing.Point(771, 6);
             this.lb1.Name = "lb1";
-            this.lb1.Size = new System.Drawing.Size(103, 16);
+            this.lb1.Size = new System.Drawing.Size(55, 16);
             this.lb1.TabIndex = 52;
-            this.lb1.Text = "現在選擇號碼";
-            // 
-            // tbResult2
-            // 
-            this.tbResult2.Font = new System.Drawing.Font("新細明體", 14F);
-            this.tbResult2.Location = new System.Drawing.Point(1169, 30);
-            this.tbResult2.Multiline = true;
-            this.tbResult2.Name = "tbResult2";
-            this.tbResult2.Size = new System.Drawing.Size(272, 439);
-            this.tbResult2.TabIndex = 51;
+            this.lb1.Text = "基準號";
             // 
             // tbPeriod2
             // 
@@ -357,22 +360,20 @@
             this.lvResult2.HideSelection = false;
             this.lvResult2.Location = new System.Drawing.Point(0, 6);
             this.lvResult2.Name = "lvResult2";
-            this.lvResult2.Size = new System.Drawing.Size(1155, 463);
+            this.lvResult2.Size = new System.Drawing.Size(765, 463);
             this.lvResult2.TabIndex = 31;
             this.lvResult2.UseCompatibleStateImageBehavior = false;
             this.lvResult2.SelectedIndexChanged += new System.EventHandler(this.lvResult2_SelectedIndexChanged);
             // 
-            // btnQueryAll
+            // lvBenchmark
             // 
-            this.btnQueryAll.Font = new System.Drawing.Font("新細明體", 14F);
-            this.btnQueryAll.Location = new System.Drawing.Point(1240, 682);
-            this.btnQueryAll.Name = "btnQueryAll";
-            this.btnQueryAll.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.btnQueryAll.Size = new System.Drawing.Size(123, 38);
-            this.btnQueryAll.TabIndex = 53;
-            this.btnQueryAll.Text = "查詢全部";
-            this.btnQueryAll.UseVisualStyleBackColor = true;
-            this.btnQueryAll.Click += new System.EventHandler(this.btnQueryAll_Click);
+            this.lvBenchmark.Font = new System.Drawing.Font("新細明體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.lvBenchmark.HideSelection = false;
+            this.lvBenchmark.Location = new System.Drawing.Point(771, 25);
+            this.lvBenchmark.Name = "lvBenchmark";
+            this.lvBenchmark.Size = new System.Drawing.Size(675, 444);
+            this.lvBenchmark.TabIndex = 54;
+            this.lvBenchmark.UseCompatibleStateImageBehavior = false;
             // 
             // Form1
             // 
@@ -414,7 +415,6 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.ListView lvResult2;
         private System.Windows.Forms.Label lb1;
-        private System.Windows.Forms.TextBox tbResult2;
         private System.Windows.Forms.TextBox tbPeriod2;
         private System.Windows.Forms.DateTimePicker dtEnd2;
         private System.Windows.Forms.DateTimePicker dtStart2;
@@ -423,6 +423,7 @@
         private System.Windows.Forms.Button btnUpdate2;
         private System.Windows.Forms.ListView lvDetail2;
         private System.Windows.Forms.Button btnQueryAll;
+        private System.Windows.Forms.ListView lvBenchmark;
     }
 }
 
