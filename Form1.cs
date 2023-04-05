@@ -361,6 +361,8 @@ namespace Lottery539
                 var result = CompareLotteryData(datas, queryDatas);
                 lotteryCompareLotteryDatas = result;
                 lvResult2.Items.AddRange(result.Select(d => new ListViewItem(new[] { d.id.ToString(), d.NextIssue, d.NextLotteryDate, d.NextNumbers })).ToArray());
+                lbAllCount.Text = "資料總筆數: " + datas.Count.ToString();
+                lbCount.Text = "筆數: " + lotteryCompareLotteryDatas.Count.ToString();
             }
             else
             {
@@ -456,6 +458,7 @@ namespace Lottery539
             lvResult2.Clear();
             lvDetail2.Clear();
             lvBenchmark.Clear();
+            lvNextIssue.Clear();
             lvResult2.View = View.Details;
             lvResult2.GridLines = true;
             lvResult2.FullRowSelect = true;
@@ -560,7 +563,29 @@ namespace Lottery539
                 }
                     var benchmarkDatas = lotteryCompareLotteryDatas.Where(w => w.id == selectedID).Select(x => x.BenchmarDatas).FirstOrDefault();
                     lvBenchmark.Items.AddRange(benchmarkDatas.Select(d => new ListViewItem(new[] { d.Issue, d.LotteryDate, d.Numbers })).ToArray());
+                    var maxIssue= benchmarkDatas.OrderByDescending(x => x.Issue).FirstOrDefault().Issue;
+                LotteryData nextData =GetNextIssue(maxIssue);
+                lvNextIssue.Clear();
+                lvNextIssue.View = View.Details;
+                lvNextIssue.Columns.Add("", 150);
+                lvNextIssue.Columns.Add("", 180);
+                lvNextIssue.Columns.Add("", 300);
+                lvNextIssue.Items.Add(new ListViewItem(new string[] { nextData.Issue, nextData.LotteryDate, nextData.Numbers}));
             }
+        }
+        private LotteryData GetNextIssue(string maxIssue)
+        {
+            var query = datas.Where(w => w.Issue == maxIssue);
+            var currentIndex = datas.IndexOf(query.First());
+
+            if (currentIndex > 0)
+            {
+                var previousRecord = datas[currentIndex - 1];
+                // 执行想要的操作
+                return previousRecord;
+            }
+            else 
+                return new LotteryData { Issue="未開獎", LotteryDate = "未開獎" , Numbers = "未開獎" };
         }
 
         private void btnQueryAll_Click(object sender, EventArgs e)
@@ -573,6 +598,8 @@ namespace Lottery539
              CompareAllLotteryData();
             lotteryCompareLotteryDatas = lotteryCompareLotteryDatas.OrderByDescending(x=>x.NextIssue).ToList();
              lvResult2.Items.AddRange(lotteryCompareLotteryDatas.Select(d => new ListViewItem(new[] { d.id.ToString(),d.NextIssue, d.NextLotteryDate, d.NextNumbers })).ToArray());
+            lbAllCount.Text = "資料總筆數: "+datas.Count.ToString();
+            lbCount.Text = "筆數: " + lotteryCompareLotteryDatas.Count.ToString();
         }
         private void CompareAllLotteryData()
         {

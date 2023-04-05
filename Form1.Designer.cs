@@ -45,8 +45,11 @@
             this.btnQuery = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.lvNextIssue = new System.Windows.Forms.ListView();
+            this.lbCount = new System.Windows.Forms.Label();
+            this.lbAllCount = new System.Windows.Forms.Label();
+            this.lvBenchmark = new System.Windows.Forms.ListView();
             this.btnQueryAll = new System.Windows.Forms.Button();
-            this.lb1 = new System.Windows.Forms.Label();
             this.tbPeriod2 = new System.Windows.Forms.TextBox();
             this.dtEnd2 = new System.Windows.Forms.DateTimePicker();
             this.dtStart2 = new System.Windows.Forms.DateTimePicker();
@@ -55,7 +58,6 @@
             this.btnUpdate2 = new System.Windows.Forms.Button();
             this.lvDetail2 = new System.Windows.Forms.ListView();
             this.lvResult2 = new System.Windows.Forms.ListView();
-            this.lvBenchmark = new System.Windows.Forms.ListView();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -139,9 +141,9 @@
             // 
             this.lvNumResult.Font = new System.Drawing.Font("新細明體", 14F);
             this.lvNumResult.HideSelection = false;
-            this.lvNumResult.Location = new System.Drawing.Point(-3, 454);
+            this.lvNumResult.Location = new System.Drawing.Point(-3, 467);
             this.lvNumResult.Name = "lvNumResult";
-            this.lvNumResult.Size = new System.Drawing.Size(1144, 150);
+            this.lvNumResult.Size = new System.Drawing.Size(1144, 137);
             this.lvNumResult.TabIndex = 37;
             this.lvNumResult.UseCompatibleStateImageBehavior = false;
             // 
@@ -240,9 +242,11 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.lvNextIssue);
+            this.tabPage2.Controls.Add(this.lbCount);
+            this.tabPage2.Controls.Add(this.lbAllCount);
             this.tabPage2.Controls.Add(this.lvBenchmark);
             this.tabPage2.Controls.Add(this.btnQueryAll);
-            this.tabPage2.Controls.Add(this.lb1);
             this.tabPage2.Controls.Add(this.tbPeriod2);
             this.tabPage2.Controls.Add(this.dtEnd2);
             this.tabPage2.Controls.Add(this.dtStart2);
@@ -259,6 +263,44 @@
             this.tabPage2.Text = "開獎紀錄回測";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // lvNextIssue
+            // 
+            this.lvNextIssue.Font = new System.Drawing.Font("新細明體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.lvNextIssue.HideSelection = false;
+            this.lvNextIssue.Location = new System.Drawing.Point(769, 0);
+            this.lvNextIssue.Name = "lvNextIssue";
+            this.lvNextIssue.Size = new System.Drawing.Size(672, 55);
+            this.lvNextIssue.TabIndex = 57;
+            this.lvNextIssue.UseCompatibleStateImageBehavior = false;
+            // 
+            // lbCount
+            // 
+            this.lbCount.AutoSize = true;
+            this.lbCount.Font = new System.Drawing.Font("新細明體", 14F);
+            this.lbCount.Location = new System.Drawing.Point(201, 3);
+            this.lbCount.Name = "lbCount";
+            this.lbCount.Size = new System.Drawing.Size(0, 19);
+            this.lbCount.TabIndex = 56;
+            // 
+            // lbAllCount
+            // 
+            this.lbAllCount.AutoSize = true;
+            this.lbAllCount.Font = new System.Drawing.Font("新細明體", 14F);
+            this.lbAllCount.Location = new System.Drawing.Point(-1, 3);
+            this.lbAllCount.Name = "lbAllCount";
+            this.lbAllCount.Size = new System.Drawing.Size(0, 19);
+            this.lbAllCount.TabIndex = 55;
+            // 
+            // lvBenchmark
+            // 
+            this.lvBenchmark.Font = new System.Drawing.Font("新細明體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.lvBenchmark.HideSelection = false;
+            this.lvBenchmark.Location = new System.Drawing.Point(771, 61);
+            this.lvBenchmark.Name = "lvBenchmark";
+            this.lvBenchmark.Size = new System.Drawing.Size(675, 408);
+            this.lvBenchmark.TabIndex = 54;
+            this.lvBenchmark.UseCompatibleStateImageBehavior = false;
+            // 
             // btnQueryAll
             // 
             this.btnQueryAll.Font = new System.Drawing.Font("新細明體", 14F);
@@ -270,16 +312,6 @@
             this.btnQueryAll.Text = "查詢全部";
             this.btnQueryAll.UseVisualStyleBackColor = true;
             this.btnQueryAll.Click += new System.EventHandler(this.btnQueryAll_Click);
-            // 
-            // lb1
-            // 
-            this.lb1.AutoSize = true;
-            this.lb1.Font = new System.Drawing.Font("新細明體", 12F);
-            this.lb1.Location = new System.Drawing.Point(771, 6);
-            this.lb1.Name = "lb1";
-            this.lb1.Size = new System.Drawing.Size(55, 16);
-            this.lb1.TabIndex = 52;
-            this.lb1.Text = "基準號";
             // 
             // tbPeriod2
             // 
@@ -358,22 +390,12 @@
             // 
             this.lvResult2.Font = new System.Drawing.Font("新細明體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.lvResult2.HideSelection = false;
-            this.lvResult2.Location = new System.Drawing.Point(0, 6);
+            this.lvResult2.Location = new System.Drawing.Point(0, 39);
             this.lvResult2.Name = "lvResult2";
-            this.lvResult2.Size = new System.Drawing.Size(765, 463);
+            this.lvResult2.Size = new System.Drawing.Size(765, 430);
             this.lvResult2.TabIndex = 31;
             this.lvResult2.UseCompatibleStateImageBehavior = false;
             this.lvResult2.SelectedIndexChanged += new System.EventHandler(this.lvResult2_SelectedIndexChanged);
-            // 
-            // lvBenchmark
-            // 
-            this.lvBenchmark.Font = new System.Drawing.Font("新細明體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.lvBenchmark.HideSelection = false;
-            this.lvBenchmark.Location = new System.Drawing.Point(771, 25);
-            this.lvBenchmark.Name = "lvBenchmark";
-            this.lvBenchmark.Size = new System.Drawing.Size(675, 444);
-            this.lvBenchmark.TabIndex = 54;
-            this.lvBenchmark.UseCompatibleStateImageBehavior = false;
             // 
             // Form1
             // 
@@ -414,7 +436,6 @@
         private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.ListView lvResult2;
-        private System.Windows.Forms.Label lb1;
         private System.Windows.Forms.TextBox tbPeriod2;
         private System.Windows.Forms.DateTimePicker dtEnd2;
         private System.Windows.Forms.DateTimePicker dtStart2;
@@ -424,6 +445,9 @@
         private System.Windows.Forms.ListView lvDetail2;
         private System.Windows.Forms.Button btnQueryAll;
         private System.Windows.Forms.ListView lvBenchmark;
+        private System.Windows.Forms.Label lbCount;
+        private System.Windows.Forms.Label lbAllCount;
+        private System.Windows.Forms.ListView lvNextIssue;
     }
 }
 
