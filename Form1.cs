@@ -1,4 +1,5 @@
 ﻿
+using Lottery539.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,6 +17,8 @@ namespace Lottery539
         log log = new log();
         Helpers helpers = new Helpers();
         List<LotteryData> datas = new List<LotteryData>();
+        List<LotteryCompareLotteryData> lotteryCompareLotteryDatas = new List<LotteryCompareLotteryData>();
+        int queryId = 0;
         public Form1()
         {
             InitializeComponent();
@@ -51,7 +54,6 @@ namespace Lottery539
             ReadFile readFile = new ReadFile();
             datas = readFile.ReadTxtFile();
             log.WriteLog("匯入資料完成...");
-            //int IssueCount = Convert.ToInt16(tbLotteryType.Text);
             Dictionary<string, int> groupNum = new Dictionary<string, int>();
             int MaxVal =0;
             int MinVal = 0;
@@ -100,8 +102,6 @@ namespace Lottery539
             string coldNumString = string.Empty;
             string hotPointNumString = string.Empty;
             string coldPointNumString = string.Empty;
-            //string hotPointCount = string.Empty;
-            //string coldPointCount = string.Empty;
             horNumString = helpers.GetNumString(hotNums);
             coldNumString = helpers.GetNumString(coldNums);
             foreach (var d in queryDatas)
@@ -130,57 +130,8 @@ namespace Lottery539
             tbLotteryType.Text = queryDatas.Count.ToString() ;
             lvNumResult.Items.Add(new ListViewItem(new string[] { horNumString, hotNums.Count.ToString(), coldNumString, coldNums.Count.ToString() }));
         }
-        //private Dictionary<string, int> GetGroupNum(List<LotteryData> datas)
-        //{
-        //    List<int> intlist = new List<int>();
-        //    Dictionary<string, int> keyValues = new Dictionary<string, int>();
-        //    string tmpString = string.Empty;
-
-        //    datas = datas.Take(datas.Count()).ToList();
-        //    foreach (var d in datas)
-        //        tmpString += d.Numbers + ",";
-        //    tmpString = tmpString.Substring(0, tmpString.Length - 1);
-        //    var numList = tmpString.Split(',');
-
-        //    foreach (var n in numList)
-        //    {
-        //        intlist.Add(Convert.ToInt32(n));
-        //    }
-        //    var q = from p in intlist
-        //            group p by p.ToString() into g
-        //            select new
-        //            {
-        //                g.Key,
-        //                Value = g.Count()
-        //            };
-
-
-        //    foreach (var x in q)
-        //    {
-        //        string key = "";
-        //        if (Convert.ToInt32(x.Key) < 10)
-        //            key = "0" + x.Key;
-        //        else
-        //            key = x.Key;
-        //        keyValues.Add(key, x.Value);
-        //    }
-
-        //    for (int i = 1; i <= 39; i++)
-        //    {
-        //        string key = "";
-        //        if (Convert.ToInt32(i) < 10)
-        //            key = "0" + i;
-        //        else
-        //            key = i.ToString();
-        //        if (!keyValues.ContainsKey(key))
-        //            keyValues.Add(key, 0);
-        //    }
-        //    Dictionary<string, int> result = keyValues.OrderBy(o => Convert.ToInt32(o.Key)).ToDictionary(o => o.Key, p => p.Value);
-        //    return result;
-        //}
         private Dictionary<string, int> GetGroupNum(List<LotteryData> datas)
         {
-            //datas=datas.Skip(1).ToList();
             var intlist = datas.SelectMany(d => d.Numbers.Split(',').Select(int.Parse));
             var keyValues = intlist.GroupBy(n => n, new NumberEqualityComparer())
                                    .ToDictionary(g => g.Key.ToString("D2"), g => g.Count()).OrderBy(o => Convert.ToInt32(o.Key)).ToDictionary(o => o.Key, p => p.Value);
@@ -195,9 +146,6 @@ namespace Lottery539
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //tbLotteryType.Items.Add("48期");
-            //tbLotteryType.Items.Add("57期");
-            //tbLotteryType.SelectedIndex = 0;          
             dtStart.Value=GetDayByIssueCount(48, dtEnd.Value.Date);
             ReloadListView();
         }
@@ -213,9 +161,7 @@ namespace Lottery539
             lvShow.Columns.Add("日期", 300);
             lvShow.Columns.Add("開獎號碼", 400);
             lvShow.Columns.Add("當期開出熱門號", 300);
-            //lvShow.Columns.Add("熱門號數量", 150);
             lvShow.Columns.Add("當期開出冷門號", 300);
-            //lvShow.Columns.Add("冷門號數量",150);
 
             lvStatistics.View = View.Details;
             lvStatistics.GridLines = true;
@@ -311,10 +257,15 @@ namespace Lottery539
             while (day != endDay)
             {
                 if (day.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    day = day.AddDays(1);
                     continue;
+                }
                 else
+                {
                     result++;
-                day.AddDays(1);
+                    day = day.AddDays(1);
+                }
             }
             return result;
         }
@@ -379,11 +330,6 @@ namespace Lottery539
                 return true;
             }
         }
-        //private List<LotteryData> MergeList(List<LotteryData> datas, LotteryData d)
-        //{
-        //    datas.Add(d);
-        //    return datas;
-        //}
 
         private void dtStart_ValueChanged(object sender, EventArgs e)
         {
@@ -393,6 +339,295 @@ namespace Lottery539
         private void dtEnd_ValueChanged(object sender, EventArgs e)
         {
             tbLotteryType.Text = "";
+        }
+
+        private void btnQuery2_Click(object sender, EventArgs e)
+        {
+            LoadDataToListView2();
+        }
+        private void LoadDataToListView2()
+        {
+            ReloadListView2();
+            log.WriteLog("匯入資料2開始...");
+            ReadFile readFile = new ReadFile();
+            datas = readFile.ReadTxtFile();
+            log.WriteLog("匯入資料2完成...");
+            var queryDatas = datas.Where(d => Convert.ToDateTime(d.LotteryDate).Date >= dtStart2.Value.Date && Convert.ToDateTime(d.LotteryDate).Date <= dtEnd2.Value.Date).ToList();
+            tbPeriod2.Text=queryDatas.Count.ToString();
+            //foreach (var queryData in queryDatas)
+            //    tbResult2.Text += queryData.Numbers + Environment.NewLine;
+            if (queryDatas.Count > 0)
+            {
+                var result = CompareLotteryData(datas, queryDatas);
+                lotteryCompareLotteryDatas = result;
+                lvResult2.Items.AddRange(result.Select(d => new ListViewItem(new[] { d.id.ToString(), d.NextIssue, d.NextLotteryDate, d.NextNumbers })).ToArray());
+                lbAllCount.Text = "資料總筆數: " + datas.Count.ToString();
+                lbCount.Text = "筆數: " + lotteryCompareLotteryDatas.Count.ToString();
+            }
+            else
+            {
+                MessageBox.Show("選擇的日期區間沒有資料");
+            }
+        }
+        private List<LotteryCompareLotteryData> CompareLotteryData(List<LotteryData> AllDatas, List<LotteryData> BenchMark)
+        {
+            List<LotteryCompareLotteryData> result=new List<LotteryCompareLotteryData>();
+            
+            List<LotteryData> tempList = new List<LotteryData>();
+            // 比對 A 和 B 的資料
+            for (int i = 0; i <= AllDatas.Count - BenchMark.Count; i++)
+            {
+                if (AllDatas[i].Issue == BenchMark[0].Issue)
+                {
+                    continue; // Issue 相同，直接跳過
+                }
+                bool isMatch = true;            
+                for (int j = 0; j < BenchMark.Count; j++)
+                {
+                    var getMatchedNumbers = string.Empty;
+                        if (!IsNumberMatch(AllDatas[i + j].Numbers, BenchMark[j].Numbers, out getMatchedNumbers))
+                        {
+                            isMatch = false;
+                            break; // 一旦有不符合的數字就跳出迴圈
+                        }
+                    LotteryData tempLotteryData = new LotteryData()
+                    {
+                        Issue = AllDatas[i + j].Issue,
+                        Numbers = AllDatas[i + j].Numbers,
+                        LotteryDate = AllDatas[i + j].LotteryDate,
+                        PointNumbers = getMatchedNumbers
+                    };
+                    tempList.Add(tempLotteryData);                    
+                }
+
+                if (isMatch)
+                {
+                    if (i == 0)
+                    {
+                        LotteryCompareLotteryData data = new LotteryCompareLotteryData()
+                        {
+                            id=queryId,
+                            Datas = tempList.ToList(),
+                            NextLotteryDate = "未開獎",
+                            NextIssue = "未開獎",
+                            NextNumbers = "未開獎",
+                            BenchmarDatas= BenchMark
+                        };
+                        queryId++;
+                        result.Add(data);
+                    }
+                    else
+                    {
+                        LotteryCompareLotteryData data = new LotteryCompareLotteryData()
+                        {
+                            id = queryId,
+                            Datas = tempList.ToList(),
+                            NextLotteryDate = AllDatas[i - 1].LotteryDate,
+                            NextIssue = AllDatas[i - 1].Issue,
+                            NextNumbers = AllDatas[i - 1].Numbers,
+                            BenchmarDatas = BenchMark
+                        };
+                        queryId++;
+                        result.Add(data);
+                    }                        
+                }
+                tempList.Clear();
+            }
+            return result;
+        }
+        private static bool IsNumberMatch(string numbersA, string numbersB, out string matchedNumbers)
+        {
+            var numListA = numbersA.Split(',');
+            var numListB = numbersB.Split(',');
+            var matchedNumList = numListA.Intersect(numListB);
+
+            if (matchedNumList.Any())
+            {
+                matchedNumbers = string.Join(",", matchedNumList);
+                return true;
+            }
+            else
+            {
+                matchedNumbers = string.Empty;
+                return false;
+            }
+        }
+
+        private void ReloadListView2()
+        {
+            lvResult2.Clear();
+            lvDetail2.Clear();
+            lvBenchmark.Clear();
+            lvNextIssue.Clear();
+            lvResult2.View = View.Details;
+            lvResult2.GridLines = true;
+            lvResult2.FullRowSelect = true;
+            lvResult2.Columns.Add("ID", 200);
+            lvResult2.Columns.Add("下一期號", 150);
+            lvResult2.Columns.Add("日期", 180);
+            lvResult2.Columns.Add("號碼", 300);
+            lvResult2.Columns[0].Width = 0;
+
+            lvDetail2.View = View.Details;
+            lvDetail2.GridLines = true;
+            lvDetail2.FullRowSelect = true;
+            lvDetail2.Columns.Add("期號", 200);
+            lvDetail2.Columns.Add("日期", 300);           
+            lvDetail2.Columns.Add("", 40);
+            lvDetail2.Columns.Add("", 40);
+            lvDetail2.Columns.Add("", 40);
+            lvDetail2.Columns.Add("", 40);
+            lvDetail2.Columns.Add("", 40);
+            lotteryCompareLotteryDatas.Clear();
+
+            lvBenchmark.View = View.Details;
+            lvBenchmark.GridLines = true;
+            lvBenchmark.FullRowSelect = true;
+            lvBenchmark.Columns.Add("期號", 150);
+            lvBenchmark.Columns.Add("日期", 180);
+            lvBenchmark.Columns.Add("號碼", 300);
+            queryId = 0;
+        }
+        private void ReloadlvBenchmark()
+        {
+            lvBenchmark.Clear();
+            lvBenchmark.View = View.Details;
+            lvBenchmark.GridLines = true;
+            lvBenchmark.FullRowSelect = true;
+            lvBenchmark.Columns.Add("期號", 150);
+            lvBenchmark.Columns.Add("日期", 180);
+            lvBenchmark.Columns.Add("號碼", 300);
+        }
+
+        private void dtStart2_ValueChanged(object sender, EventArgs e)
+        {
+            //tbPeriod2GetIssueCount();
+        }
+        private void dtEnd2_ValueChanged(object sender, EventArgs e)
+        {
+            //tbPeriod2GetIssueCount();
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedTab == tabControl1.TabPages["tabPage1"])//your specific tabname
+            {
+                ReloadListView();
+            }
+            else if (tabControl1.SelectedTab == tabControl1.TabPages["tabPage2"])//your specific tabname
+            {
+                ReloadListView2();
+                dtStart2.Value  = GetDayByIssueCount(5, dtEnd.Value.Date); // 設定起始日期
+                dtEnd2.Value = DateTime.Now.Date;              
+                //tbPeriod2GetIssueCount();
+            }
+        }
+
+        private void lvResult2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lvResult2.SelectedItems.Count > 0)
+            {
+                ReloadlvBenchmark();
+                // 獲取總表選中的項目 
+                var selectedItem = lvResult2.SelectedItems[0];
+                var selectedID =Convert.ToInt16(selectedItem.SubItems[0].Text);
+
+                // 清空明細表中的項目 
+                lvDetail2.Items.Clear();
+                var data = lotteryCompareLotteryDatas.Where(w => w.id == selectedID).Select(x => x.Datas).FirstOrDefault();
+                foreach (var d in data)
+                {
+                    string[] numbers = d.Numbers.Split(',');
+                    string[] pointNumbers = d.PointNumbers.Split(',');
+
+                    // 產生明細資料
+                    var listViewItem = new ListViewItem(new string[] { d.Issue, d.LotteryDate });
+                    listViewItem.UseItemStyleForSubItems = false;
+                    for (int i = 0; i < 5; i++)
+                    {
+                        var number = numbers[i];
+                        var isPointNumber = pointNumbers.Contains(number); 
+
+                        if (isPointNumber)
+                        {
+                            // 將對應欄位的文字設為紅色
+                            listViewItem.SubItems.Add(new ListViewItem.ListViewSubItem(listViewItem, number, Color.Red, Color.Empty, lvDetail2.Font) { Font = new Font(lvDetail2.Font, FontStyle.Bold) });
+                        }
+                        else
+                        {
+                            // 將對應欄位的文字設為黑色
+                            listViewItem.SubItems.Add(new ListViewItem.ListViewSubItem(listViewItem, number));
+                        }
+                    }
+                    lvDetail2.Items.Add(listViewItem);
+                }
+                    var benchmarkDatas = lotteryCompareLotteryDatas.Where(w => w.id == selectedID).Select(x => x.BenchmarDatas).FirstOrDefault();
+                    lvBenchmark.Items.AddRange(benchmarkDatas.Select(d => new ListViewItem(new[] { d.Issue, d.LotteryDate, d.Numbers })).ToArray());
+                    var maxIssue= benchmarkDatas.OrderByDescending(x => x.Issue).FirstOrDefault().Issue;
+                LotteryData nextData =GetNextIssue(maxIssue);
+                lvNextIssue.Clear();
+                lvNextIssue.View = View.Details;
+                lvNextIssue.Columns.Add("", 150);
+                lvNextIssue.Columns.Add("", 180);
+                lvNextIssue.Columns.Add("", 300);
+                lvNextIssue.Items.Add(new ListViewItem(new string[] { nextData.Issue, nextData.LotteryDate, nextData.Numbers}));
+            }
+        }
+        private LotteryData GetNextIssue(string maxIssue)
+        {
+            var query = datas.Where(w => w.Issue == maxIssue);
+            var currentIndex = datas.IndexOf(query.First());
+
+            if (currentIndex > 0)
+            {
+                var previousRecord = datas[currentIndex - 1];
+                // 执行想要的操作
+                return previousRecord;
+            }
+            else 
+                return new LotteryData { Issue="未開獎", LotteryDate = "未開獎" , Numbers = "未開獎" };
+        }
+
+        private void btnQueryAll_Click(object sender, EventArgs e)
+        {
+            ReloadListView2();
+            log.WriteLog("匯入資料2 All開始...");
+            ReadFile readFile = new ReadFile();
+            datas = readFile.ReadTxtFile();
+            log.WriteLog("匯入資料2 All完成...");
+             CompareAllLotteryData();
+            lotteryCompareLotteryDatas = lotteryCompareLotteryDatas.OrderByDescending(x=>x.NextIssue).ToList();
+             lvResult2.Items.AddRange(lotteryCompareLotteryDatas.Select(d => new ListViewItem(new[] { d.id.ToString(),d.NextIssue, d.NextLotteryDate, d.NextNumbers })).ToArray());
+            lbAllCount.Text = "資料總筆數: "+datas.Count.ToString();
+            lbCount.Text = "筆數: " + lotteryCompareLotteryDatas.Count.ToString();
+        }
+        private void CompareAllLotteryData()
+        {
+            lotteryCompareLotteryDatas = new List<LotteryCompareLotteryData>();
+
+            List<LotteryCompareLotteryData> tempResult = new List<LotteryCompareLotteryData>();
+            int range = 0;
+            try
+            {
+                range = Convert.ToInt16(tbPeriod2.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("請輸入正整數");
+                return;
+            }
+            for (int i = 0; i < datas.Count; i++)
+            {
+                if(i+ range> datas.Count)
+                {
+                    break;
+                }
+                tempResult = CompareLotteryData(datas, datas.GetRange(i, range));
+                if (tempResult.Count > 0)
+                {
+                    lotteryCompareLotteryDatas.AddRange(tempResult);
+                }
+            }
         }
     }
 }
