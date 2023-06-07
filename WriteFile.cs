@@ -12,45 +12,13 @@ namespace Lottery539
     {
         string path = Path.Combine(System.Windows.Forms.Application.StartupPath);
         string fileName = "Lottery";
-        //判斷檔案和檔案內容是否存在
-        //public bool IsExistData(string maxIssue, int year)
-        //{
-        //    bool result = true;
-        //    string line = "";
-        //    string DataPath = Path.Combine(path, "Lottery" + ".txt");
-        //    if (File.Exists(DataPath))
-        //    {
-        //        StreamReader sr = new StreamReader(DataPath);
-        //        while ((line = sr.ReadLine()) != null)
-        //        {
-        //            if (line.Contains(year.ToString()))
-        //            {
-        //                result = true;
-
-        //                break;
-        //            }
-        //            else
-        //                result = false;
-        //        }
-        //        sr.Close();
-        //    }
-        //    else
-        //    {
-        //        result = false;
-        //    }
-        //    return result;
-        //}
         public void WriteData(List<LotteryData> data)
         {
             string FileName = Path.Combine(path, fileName + ".txt");
-            if (File.Exists(FileName))
-                 File.Delete(FileName);
-            using (StreamWriter sw = new StreamWriter(FileName, true))
-            {
-                foreach (var d in FormatDataFile(data))
-                    sw.WriteLine(d);
-                sw.Close();
-            }
+            List<string> existingLines = File.ReadAllLines(FileName).ToList();
+            List<string> newDataLines = FormatDataFile(data);
+            existingLines.InsertRange(0, newDataLines);
+            File.WriteAllLines(FileName, existingLines);
         }
         public List<string> FormatDataFile(List<LotteryData> data)
         {
