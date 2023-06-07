@@ -3,12 +3,9 @@ using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenQA.Selenium.Chrome;
 using System.Threading;
 using System.Configuration;
-using Lottery539;
 
 namespace Lottery539
 {
@@ -17,15 +14,19 @@ namespace Lottery539
     {
         WebDriverWait wait;
         IWebDriver driver = new ChromeDriver();
-        WriteFile writeFile = new WriteFile();
+        ReadFile readFile = new ReadFile();
         log log = new log();
         List<LotteryData> lotteryDataList = new List<LotteryData>();
+        long ClientMaxIssue = 0;
         public void LoadData()
         {
             try
-            {                
+            {
+                var file = readFile.ReadTxtFile();
                 while (lotteryDataList.Count == 0)
                 {
+                    if (file.Count > 0)
+                        ClientMaxIssue =Convert.ToInt64(file.Max(f => f.Issue));
                     GetData();
                 }
                 WriteFile writeFile = new WriteFile();
@@ -89,17 +90,22 @@ namespace Lottery539
                 lotteryDataList = new List<LotteryData>();
                 var lotteryRows = driver.FindElements(By.XPath($"/html/body/table[3]/tbody/tr")).Skip(2);
                 lotteryRows = lotteryRows.Take(lotteryRows.Count() - 1);
+                bool isMaxIssueExceeded = ClientMaxIssue > 0;
+
                 foreach (var row in lotteryRows)
                 {
                     var columns = row.FindElements(By.TagName("td"));
-                    var lotteryData = new LotteryData
+                    if (!isMaxIssueExceeded || Convert.ToInt64(columns[0].Text) > ClientMaxIssue)
                     {
-                        Issue = columns[0].Text,
-                        LotteryDate = columns[1].Text,
-                        Numbers = columns[2].Text
-                    };
-                    lotteryDataList.Add(lotteryData);
-                }           
+                        var lotteryData = new LotteryData
+                        {
+                            Issue = columns[0].Text,
+                            LotteryDate = columns[1].Text,
+                            Numbers = columns[2].Text
+                        };
+                        lotteryDataList.Add(lotteryData);
+                    }
+                }
             }
             catch (Exception ex)
             {
