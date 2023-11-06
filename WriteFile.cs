@@ -15,6 +15,10 @@ namespace Lottery539
         public void WriteData(List<LotteryData> data)
         {
             string FileName = Path.Combine(path, fileName + ".txt");
+            if (!File.Exists(FileName))
+            {
+                File.Create(FileName).Close();
+            }
             List<string> existingLines = File.ReadAllLines(FileName).ToList();
             List<string> newDataLines = FormatDataFile(data);
             existingLines.InsertRange(0, newDataLines);
