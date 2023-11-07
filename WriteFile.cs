@@ -71,8 +71,11 @@ namespace Lottery539
                     insertIndex = i;
                     break;
                 }
+                if(insertIndex == 0 && i == existingLines.Count - 1)
+                {
+                    insertIndex = existingLines.Count;
+                }
             }
-
             // 插入新数据
             existingLines.Insert(insertIndex, newDataLines[0]);
 

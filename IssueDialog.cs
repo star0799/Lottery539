@@ -25,21 +25,36 @@ namespace Lottery539
             if (string.IsNullOrEmpty(inputIssue) || string.IsNullOrEmpty(inputDate) || string.IsNullOrEmpty(inputNumbers))
             {
                 MessageBox.Show("欄位不得為空");
+                return;
             }
-
             string[] arrNumbers = inputNumbers.Split(',');
+            if (arrNumbers.Length != 5)
+            {
+                MessageBox.Show("格式錯誤!");
+                return;
+            }
+            ReadFile readFile = new ReadFile();
+            List<LotteryData> datas = readFile.ReadTxtFile();
+            if (datas.Select(d => d.Issue).Contains(inputIssue))
+            {
+                MessageBox.Show("重複的期號!");
+                return;
+            }
             inputDate = Convert.ToDateTime(inputDate).ToString("yyyy-MM-dd");
-            if (arrNumbers.Length == 5)
+            if (datas.Select(d => d.LotteryDate).Contains(inputDate))
             {
-                WriteFile writeFile = new WriteFile();
-                writeFile.InsertLottery(new LotteryData { Issue = inputIssue, LotteryDate = inputDate, Numbers = inputNumbers });
-                this.Close();
-                MessageBox.Show("新增成功");
+                MessageBox.Show("重複的日期!");
+                return;
             }
-            else
-            {
-                MessageBox.Show("格式錯誤");
-            }
+            WriteFile writeFile = new WriteFile();
+            writeFile.InsertLottery(new LotteryData { Issue = inputIssue, LotteryDate = inputDate, Numbers = inputNumbers });
+            this.Close();
+            MessageBox.Show("新增成功");
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }
