@@ -30,6 +30,7 @@ namespace Lottery539
                 KillAllChromeDriverProcesses();
                 DownloadNewVersionOfChrome(urlToDownload, ChromeDriverPath);
                 string extract = ExtructZip(ChromeDriverPath);
+                MoveChromeDriver(ChromeDriverPath);
             }
         }
         static string GetChromDriverVersion(string ChromeDriverePath)
@@ -110,7 +111,7 @@ namespace Lottery539
 
             //URL's originates from here: https://chromedriver.chromium.org/downloads/version-selection
             string html = string.Empty;
-            string urlToPathLocation = @"https://chromedriver.storage.googleapis.com/LATEST_RELEASE_" + String.Join(".", version.Split('.').Take(3));
+            string urlToPathLocation = @"https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_" + String.Join(".", version.Split('.').Take(3));
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlToPathLocation);
             request.AutomaticDecompression = DecompressionMethods.GZip;
@@ -127,7 +128,7 @@ namespace Lottery539
                 throw new WebException("Unable to get version path from website");
             }
 
-            return "https://chromedriver.storage.googleapis.com/" + html + "/chromedriver_win32.zip";
+            return "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/" + html + "/win64/chromedriver-win64.zip";
         }
         static void KillAllChromeDriverProcesses()
         {
@@ -191,6 +192,24 @@ namespace Lottery539
             }
             return errorMsg;
         }
+        public void MoveChromeDriver(string ChromeDriverPath)
+        {
+            // 构建chromedriver.exe的完整路径
+            string chromedriverExePath = Path.Combine(ChromeDriverPath, "chromedriver-win64", "chromedriver.exe");
 
+            try
+            {
+                // 移动chromedriver.exe到目标路径
+                File.Move(chromedriverExePath, Path.Combine(ChromeDriverPath, "chromedriver.exe"));
+
+                // 删除chromedriver-win64文件夹
+                Directory.Delete(Path.Combine(ChromeDriverPath, "chromedriver-win64"), true);
+            }
+            catch (Exception ex)
+            {
+                // 处理错误，例如文件不存在或无法删除文件夹
+                Console.WriteLine("发生错误：" + ex.Message);
+            }
+        }
     }
 }
