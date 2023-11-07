@@ -31,6 +31,7 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnOpenDialog = new System.Windows.Forms.Button();
             this.tbLotteryType = new System.Windows.Forms.TextBox();
             this.dtEnd = new System.Windows.Forms.DateTimePicker();
             this.dtStart = new System.Windows.Forms.DateTimePicker();
@@ -45,6 +46,7 @@
             this.btnQuery = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.btnOpenDialog2 = new System.Windows.Forms.Button();
             this.lvNextIssue = new System.Windows.Forms.ListView();
             this.lbCount = new System.Windows.Forms.Label();
             this.lbAllCount = new System.Windows.Forms.Label();
@@ -90,6 +92,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnOpenDialog);
             this.panel1.Controls.Add(this.tbLotteryType);
             this.panel1.Controls.Add(this.dtEnd);
             this.panel1.Controls.Add(this.dtStart);
@@ -109,6 +112,18 @@
             this.panel1.Size = new System.Drawing.Size(1443, 720);
             this.panel1.TabIndex = 0;
             // 
+            // btnOpenDialog
+            // 
+            this.btnOpenDialog.Font = new System.Drawing.Font("新細明體", 10F);
+            this.btnOpenDialog.Location = new System.Drawing.Point(1168, 686);
+            this.btnOpenDialog.Name = "btnOpenDialog";
+            this.btnOpenDialog.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.btnOpenDialog.Size = new System.Drawing.Size(111, 26);
+            this.btnOpenDialog.TabIndex = 41;
+            this.btnOpenDialog.Text = "手動添加期號";
+            this.btnOpenDialog.UseVisualStyleBackColor = true;
+            this.btnOpenDialog.Click += new System.EventHandler(this.btnOpenDialog_Click);
+            // 
             // tbLotteryType
             // 
             this.tbLotteryType.Font = new System.Drawing.Font("新細明體", 14F);
@@ -116,7 +131,7 @@
             this.tbLotteryType.MaxLength = 2;
             this.tbLotteryType.Name = "tbLotteryType";
             this.tbLotteryType.ReadOnly = true;
-            this.tbLotteryType.Size = new System.Drawing.Size(123, 30);
+            this.tbLotteryType.Size = new System.Drawing.Size(212, 30);
             this.tbLotteryType.TabIndex = 40;
             // 
             // dtEnd
@@ -183,7 +198,7 @@
             this.tbMin.Location = new System.Drawing.Point(1222, 610);
             this.tbMin.MaxLength = 2;
             this.tbMin.Name = "tbMin";
-            this.tbMin.Size = new System.Drawing.Size(123, 30);
+            this.tbMin.Size = new System.Drawing.Size(212, 30);
             this.tbMin.TabIndex = 33;
             // 
             // tbMax
@@ -192,7 +207,7 @@
             this.tbMax.Location = new System.Drawing.Point(1222, 566);
             this.tbMax.MaxLength = 2;
             this.tbMax.Name = "tbMax";
-            this.tbMax.Size = new System.Drawing.Size(123, 30);
+            this.tbMax.Size = new System.Drawing.Size(212, 30);
             this.tbMax.TabIndex = 32;
             // 
             // lvStatistics
@@ -219,10 +234,10 @@
             // btnQuery
             // 
             this.btnQuery.Font = new System.Drawing.Font("新細明體", 14F);
-            this.btnQuery.Location = new System.Drawing.Point(1222, 678);
+            this.btnQuery.Location = new System.Drawing.Point(1311, 654);
             this.btnQuery.Name = "btnQuery";
             this.btnQuery.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.btnQuery.Size = new System.Drawing.Size(123, 38);
+            this.btnQuery.Size = new System.Drawing.Size(123, 63);
             this.btnQuery.TabIndex = 29;
             this.btnQuery.Text = "查詢";
             this.btnQuery.UseVisualStyleBackColor = true;
@@ -231,10 +246,10 @@
             // btnUpdate
             // 
             this.btnUpdate.Font = new System.Drawing.Font("新細明體", 10F);
-            this.btnUpdate.Location = new System.Drawing.Point(1157, 645);
+            this.btnUpdate.Location = new System.Drawing.Point(1168, 654);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.btnUpdate.Size = new System.Drawing.Size(59, 26);
+            this.btnUpdate.Size = new System.Drawing.Size(111, 26);
             this.btnUpdate.TabIndex = 28;
             this.btnUpdate.Text = "更新";
             this.btnUpdate.UseVisualStyleBackColor = true;
@@ -242,6 +257,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.btnOpenDialog2);
             this.tabPage2.Controls.Add(this.lvNextIssue);
             this.tabPage2.Controls.Add(this.lbCount);
             this.tabPage2.Controls.Add(this.lbAllCount);
@@ -262,6 +278,18 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "開獎紀錄回測";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // btnOpenDialog2
+            // 
+            this.btnOpenDialog2.Font = new System.Drawing.Font("新細明體", 10F);
+            this.btnOpenDialog2.Location = new System.Drawing.Point(1169, 632);
+            this.btnOpenDialog2.Name = "btnOpenDialog2";
+            this.btnOpenDialog2.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.btnOpenDialog2.Size = new System.Drawing.Size(121, 26);
+            this.btnOpenDialog2.TabIndex = 58;
+            this.btnOpenDialog2.Text = "手動添加期號";
+            this.btnOpenDialog2.UseVisualStyleBackColor = true;
+            this.btnOpenDialog2.Click += new System.EventHandler(this.btnOpenDialog2_Click);
             // 
             // lvNextIssue
             // 
@@ -304,10 +332,10 @@
             // btnQueryAll
             // 
             this.btnQueryAll.Font = new System.Drawing.Font("新細明體", 14F);
-            this.btnQueryAll.Location = new System.Drawing.Point(1240, 682);
+            this.btnQueryAll.Location = new System.Drawing.Point(1320, 663);
             this.btnQueryAll.Name = "btnQueryAll";
             this.btnQueryAll.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.btnQueryAll.Size = new System.Drawing.Size(123, 38);
+            this.btnQueryAll.Size = new System.Drawing.Size(123, 57);
             this.btnQueryAll.TabIndex = 53;
             this.btnQueryAll.Text = "查詢全部";
             this.btnQueryAll.UseVisualStyleBackColor = true;
@@ -316,7 +344,7 @@
             // tbPeriod2
             // 
             this.tbPeriod2.Font = new System.Drawing.Font("新細明體", 14F);
-            this.tbPeriod2.Location = new System.Drawing.Point(1240, 539);
+            this.tbPeriod2.Location = new System.Drawing.Point(1223, 539);
             this.tbPeriod2.MaxLength = 2;
             this.tbPeriod2.Name = "tbPeriod2";
             this.tbPeriod2.Size = new System.Drawing.Size(123, 30);
@@ -346,7 +374,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("新細明體", 14F);
-            this.label6.Location = new System.Drawing.Point(1182, 542);
+            this.label6.Location = new System.Drawing.Point(1165, 542);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(52, 19);
             this.label6.TabIndex = 45;
@@ -355,10 +383,10 @@
             // btnQuery2
             // 
             this.btnQuery2.Font = new System.Drawing.Font("新細明體", 14F);
-            this.btnQuery2.Location = new System.Drawing.Point(1240, 621);
+            this.btnQuery2.Location = new System.Drawing.Point(1320, 588);
             this.btnQuery2.Name = "btnQuery2";
             this.btnQuery2.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.btnQuery2.Size = new System.Drawing.Size(123, 38);
+            this.btnQuery2.Size = new System.Drawing.Size(123, 59);
             this.btnQuery2.TabIndex = 42;
             this.btnQuery2.Text = "查詢";
             this.btnQuery2.UseVisualStyleBackColor = true;
@@ -367,10 +395,10 @@
             // btnUpdate2
             // 
             this.btnUpdate2.Font = new System.Drawing.Font("新細明體", 10F);
-            this.btnUpdate2.Location = new System.Drawing.Point(1175, 588);
+            this.btnUpdate2.Location = new System.Drawing.Point(1169, 588);
             this.btnUpdate2.Name = "btnUpdate2";
             this.btnUpdate2.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.btnUpdate2.Size = new System.Drawing.Size(59, 26);
+            this.btnUpdate2.Size = new System.Drawing.Size(121, 26);
             this.btnUpdate2.TabIndex = 41;
             this.btnUpdate2.Text = "更新";
             this.btnUpdate2.UseVisualStyleBackColor = true;
@@ -448,6 +476,8 @@
         private System.Windows.Forms.Label lbCount;
         private System.Windows.Forms.Label lbAllCount;
         private System.Windows.Forms.ListView lvNextIssue;
+        private System.Windows.Forms.Button btnOpenDialog;
+        private System.Windows.Forms.Button btnOpenDialog2;
     }
 }
 

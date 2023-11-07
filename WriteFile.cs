@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,45 +13,17 @@ namespace Lottery539
     {
         string path = Path.Combine(System.Windows.Forms.Application.StartupPath);
         string fileName = "Lottery";
-        //判斷檔案和檔案內容是否存在
-        //public bool IsExistData(string maxIssue, int year)
-        //{
-        //    bool result = true;
-        //    string line = "";
-        //    string DataPath = Path.Combine(path, "Lottery" + ".txt");
-        //    if (File.Exists(DataPath))
-        //    {
-        //        StreamReader sr = new StreamReader(DataPath);
-        //        while ((line = sr.ReadLine()) != null)
-        //        {
-        //            if (line.Contains(year.ToString()))
-        //            {
-        //                result = true;
-
-        //                break;
-        //            }
-        //            else
-        //                result = false;
-        //        }
-        //        sr.Close();
-        //    }
-        //    else
-        //    {
-        //        result = false;
-        //    }
-        //    return result;
-        //}
         public void WriteData(List<LotteryData> data)
         {
             string FileName = Path.Combine(path, fileName + ".txt");
-            if (File.Exists(FileName))
-                 File.Delete(FileName);
-            using (StreamWriter sw = new StreamWriter(FileName, true))
+            if (!File.Exists(FileName))
             {
-                foreach (var d in FormatDataFile(data))
-                    sw.WriteLine(d);
-                sw.Close();
+                File.Create(FileName).Close();
             }
+            List<string> existingLines = File.ReadAllLines(FileName).ToList();
+            List<string> newDataLines = FormatDataFile(data);
+            existingLines.InsertRange(0, newDataLines);
+            File.WriteAllLines(FileName, existingLines);
         }
         public List<string> FormatDataFile(List<LotteryData> data)
         {
@@ -71,6 +44,43 @@ namespace Lottery539
             }
             result = result.Substring(0,result.Length-1);
             return result;
+        }
+        public void InsertLottery(LotteryData data)
+        {
+            string FileName = Path.Combine(path, fileName + ".txt");
+            if (!File.Exists(FileName))
+            {
+                File.Create(FileName).Close();
+            }
+            List<string> existingLines = File.ReadAllLines(FileName).ToList();
+            List<string> newDataLines = FormatDataFile(new List<LotteryData> { data });
+
+            // 将新数据的日期解析为 DateTime
+            DateTime newDate = DateTime.ParseExact(data.LotteryDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+            // 查找要插入的位置
+            int insertIndex = 0;
+            for (int i = 0; i < existingLines.Count; i++)
+            {
+                // 解析现有行的日期
+                DateTime existingDate = DateTime.ParseExact(existingLines[i].Split(':')[1], "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+                // 如果新数据日期早于或等于现有行的日期，则找到插入位置
+                if (newDate > existingDate)
+                {
+                    insertIndex = i;
+                    break;
+                }
+                if(insertIndex == 0 && i == existingLines.Count - 1)
+                {
+                    insertIndex = existingLines.Count;
+                }
+            }
+            // 插入新数据
+            existingLines.Insert(insertIndex, newDataLines[0]);
+
+            // 保存按日期排序的数据
+            File.WriteAllLines(FileName, existingLines);
         }
     }
 }

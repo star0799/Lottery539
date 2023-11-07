@@ -79,6 +79,7 @@ namespace Lottery539
             groupNum = GetGroupNum(queryDatas);
 
             List<LotteryData> allData = new List<LotteryData>(queryDatas);
+            if(previousIssue!=null)
             allData.Add(previousIssue);
             var noFinalIssue= GetGroupNum(allData.Skip(1).ToList());
             int[] intNumsCount = groupNum.Values.ToArray();
@@ -627,6 +628,24 @@ namespace Lottery539
                 {
                     lotteryCompareLotteryDatas.AddRange(tempResult);
                 }
+            }
+        }
+
+        private void btnOpenDialog_Click(object sender, EventArgs e)
+        {
+            using (IssueDialog inputDialog = new IssueDialog())
+            {
+                inputDialog.StartPosition = FormStartPosition.CenterParent;
+                inputDialog.ShowDialog();
+            }
+        }
+
+        private void btnOpenDialog2_Click(object sender, EventArgs e)
+        {
+            using (IssueDialog inputDialog = new IssueDialog())
+            {
+                inputDialog.StartPosition = FormStartPosition.CenterParent;
+                inputDialog.ShowDialog();
             }
         }
     }
