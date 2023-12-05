@@ -17,18 +17,15 @@ namespace Lottery539
         ReadFile readFile = new ReadFile();
         log log = new log();
         List<LotteryData> lotteryDataList = new List<LotteryData>();
-        long ClientMaxIssue = 0;
+        long clientMaxIssue = 0;
         public void LoadData()
         {
             try
             {
                 var file = readFile.ReadTxtFile();
-                while (lotteryDataList.Count == 0)
-                {
-                    if (file.Count > 0)
-                        ClientMaxIssue =Convert.ToInt64(file.Max(f => f.Issue));
-                    GetData();
-                }
+                if (file.Count > 0)
+                clientMaxIssue =Convert.ToInt64(file.Max(f => f.Issue));
+                GetData();
                 WriteFile writeFile = new WriteFile();
                 writeFile.WriteData(lotteryDataList);
             }
@@ -60,12 +57,8 @@ namespace Lottery539
                 driver.FindElement(By.Name("userName")).SendKeys(GetConfigValue("UserId"));
                 driver.FindElement(By.Name("password")).SendKeys(GetConfigValue("UserPwd"));
                 IWebElement loginBtn = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath($"/html/body/div/form/table/tbody/tr/td[3]/input")));
-                //這邊一定要等
-                Thread.Sleep(2000);
                 loginBtn.Click();
-                Thread.Sleep(2000);
                 driver.SwitchTo().DefaultContent();
-                //driver.FindElement(By.XPath($"/html/body/div/form/table/tbody/tr/td[3]/input")).Click();
                 driver.Navigate().GoToUrl("http://lotto.arclink.com.tw/Lotto39List.html");
                 wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
 
@@ -88,23 +81,20 @@ namespace Lottery539
                 }
 
                 lotteryDataList = new List<LotteryData>();
-                var lotteryRows = driver.FindElements(By.XPath($"/html/body/table[3]/tbody/tr")).Skip(2);
-                lotteryRows = lotteryRows.Take(lotteryRows.Count() - 1);
-                bool isMaxIssueExceeded = ClientMaxIssue > 0;
+                string maxIssueXPath = $"//td[1][text() > '{clientMaxIssue}']/parent::tr";
 
-                foreach (var row in lotteryRows)
+                IReadOnlyList<IWebElement> lotteryRows = driver.FindElements(By.XPath(maxIssueXPath));
+
+                foreach (IWebElement row in lotteryRows)
                 {
-                    var columns = row.FindElements(By.TagName("td"));
-                    if (!isMaxIssueExceeded || Convert.ToInt64(columns[0].Text) > ClientMaxIssue)
+                    IReadOnlyList<IWebElement> columns = row.FindElements(By.TagName("td"));
+                    LotteryData lotteryData = new LotteryData
                     {
-                        var lotteryData = new LotteryData
-                        {
-                            Issue = columns[0].Text,
-                            LotteryDate = columns[1].Text,
-                            Numbers = columns[2].Text
-                        };
-                        lotteryDataList.Add(lotteryData);
-                    }
+                        Issue = columns[0].Text,
+                        LotteryDate = columns[1].Text,
+                        Numbers = columns[2].Text
+                    };
+                    lotteryDataList.Add(lotteryData);
                 }
             }
             catch (Exception ex)

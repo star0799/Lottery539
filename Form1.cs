@@ -364,6 +364,7 @@ namespace Lottery539
                 lvResult2.Items.AddRange(result.Select(d => new ListViewItem(new[] { d.id.ToString(), d.NextIssue, d.NextLotteryDate, d.NextNumbers })).ToArray());
                 lbAllCount.Text = "資料總筆數: " + datas.Count.ToString();
                 lbCount.Text = "筆數: " + lotteryCompareLotteryDatas.Count.ToString();
+                lbMaxDate.Text = "最新日期: " + datas.Max(d=>d.LotteryDate);
             }
             else
             {

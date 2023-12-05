@@ -46,6 +46,7 @@
             this.btnQuery = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.lbMaxDate = new System.Windows.Forms.Label();
             this.btnOpenDialog2 = new System.Windows.Forms.Button();
             this.lvNextIssue = new System.Windows.Forms.ListView();
             this.lbCount = new System.Windows.Forms.Label();
@@ -257,6 +258,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.lbMaxDate);
             this.tabPage2.Controls.Add(this.btnOpenDialog2);
             this.tabPage2.Controls.Add(this.lvNextIssue);
             this.tabPage2.Controls.Add(this.lbCount);
@@ -278,6 +280,15 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "開獎紀錄回測";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // lbMaxDate
+            // 
+            this.lbMaxDate.AutoSize = true;
+            this.lbMaxDate.Font = new System.Drawing.Font("新細明體", 14F);
+            this.lbMaxDate.Location = new System.Drawing.Point(340, 3);
+            this.lbMaxDate.Name = "lbMaxDate";
+            this.lbMaxDate.Size = new System.Drawing.Size(0, 19);
+            this.lbMaxDate.TabIndex = 60;
             // 
             // btnOpenDialog2
             // 
@@ -478,6 +489,7 @@
         private System.Windows.Forms.ListView lvNextIssue;
         private System.Windows.Forms.Button btnOpenDialog;
         private System.Windows.Forms.Button btnOpenDialog2;
+        private System.Windows.Forms.Label lbMaxDate;
     }
 }
 
