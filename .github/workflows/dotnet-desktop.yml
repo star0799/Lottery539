@@ -13,6 +13,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.0.2
+
     - name: Build
       run: |
         nuget restore Lottery539.sln
