@@ -24,7 +24,7 @@ jobs:
     - name: Publish
       run: |
         mkdir publish
-        xcopy /y /s bin\Release\net472\* publish\
+        xcopy /y /s .\bin\Release\* .\publish\
 
     - name: Package
       run: Compress-Archive -Path publish -DestinationPath output.zip
