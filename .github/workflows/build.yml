@@ -16,10 +16,16 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '5.0'
-
+        dotnet-version: '5.0.400'
+        msbuild-version: '17.8.3'
+        
     - name: Build
       run: dotnet build -c Release
 
     - name: Test
       run: dotnet test -c Release
+      
+    - name: Clean and Restore
+      run: |
+       dotnet clean -c Release
+       dotnet restore
