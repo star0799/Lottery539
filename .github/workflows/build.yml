@@ -16,9 +16,9 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '5.0.400'
-        msbuild-version: '17.8.3'
-        
+        dotnet-version: '6.0.202'
+        msbuild-version: '17.0.0'
+
     - name: Build
       run: dotnet build -c Release
 
