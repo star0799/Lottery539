@@ -79,4 +79,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
             name: version-info
-            path: version.txt
+            path: .\publish\version.txt 
