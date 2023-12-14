@@ -53,14 +53,11 @@ jobs:
         id: set-version
         run: echo "::set-output name=version::$(date +'%Y%m%d%H%M%S')"
 
-      - name: Display artifact contents
-        run: ls -R
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.set-version.outputs.version }}
           release_name: Release ${{ steps.set-version.outputs.version }}
@@ -73,5 +70,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./output.zip
-          asset_name: Lottery539-${{ steps.set-version.outputs.version }}.zip
+          asset_name: output.zip
           asset_content_type: application/zip
