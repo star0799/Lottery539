@@ -31,7 +31,7 @@ jobs:
         xcopy /y /s .\bin\Release\* .\publish\
 
     - name: Package
-      run: Compress-Archive -Path publish -DestinationPath winforms-app/output.zip
+      run: Compress-Archive -Path publish -DestinationPath output.zip
       
     - name: Upload artifact
       uses: actions/upload-artifact@v2
@@ -70,6 +70,6 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./winforms-app/output.zip
+        asset_path: ./output.zip
         asset_name: Lottery539-${{ steps.set-version.outputs.version }}.zip
         asset_content_type: application/zip
