@@ -29,6 +29,7 @@ jobs:
       run: |
         mkdir publish
         xcopy /y /s .\bin\Release\* .\publish\
+        echo ${{ steps.set-version.outputs.version }} > .\publish\version.txt
 
     - name: Package
       run: Compress-Archive -Path publish -DestinationPath output.zip
