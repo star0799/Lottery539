@@ -31,8 +31,8 @@ jobs:
         xcopy /y /s .\bin\Release\* .\publish\
 
     - name: Package
-      run: Compress-Archive -Path publish -DestinationPath output.zip
-
+      run: Compress-Archive -Path publish -DestinationPath winforms-app/output.zip
+      
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
