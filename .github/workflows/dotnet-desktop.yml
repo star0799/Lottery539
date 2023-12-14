@@ -53,12 +53,8 @@ jobs:
         id: set-version
         run: echo "::set-output name=version::$(date +'%Y%m%d%H%M%S')"
 
-      - name: Change directory to winforms-app
-        run: cd winforms-app
-
-      - name: List contents of winforms-app directory
-        run: |
-         ls -R
+      - name: Display artifact contents
+        run: ls -R
 
       - name: Create Release
         id: create_release
