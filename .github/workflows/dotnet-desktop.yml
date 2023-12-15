@@ -18,19 +18,18 @@ jobs:
 
     - name: Set version
       id: set-version
-      run: |
-        echo "MY_VERSION=$(date +'%Y%m%d%H%M%S')" > version.txt
-        echo "::set-output name=version::$(cat version.txt)"
+      run: echo "::set-output name=version::$(date +'%Y%m%d%H%M%S')"
 
     - name: Build
       run: |
         nuget restore Lottery539.sln
-        msbuild /p:Configuration=Release /p:Version=$(cat version.txt) Lottery539.sln
+        msbuild /p:Configuration=Release /p:Version=$(date +'%Y%m%d%H%M%S') Lottery539.sln
 
     - name: Publish
       run: |
         mkdir publish
         xcopy /y /s .\bin\Release\* .\publish\
+        echo ${{ steps.set-version.outputs.version }} > .\publish\version.txt
 
     - name: Package
       run: Compress-Archive -Path publish -DestinationPath output.zip
@@ -81,4 +80,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
             name: version-info
-            path: version.txt
+            path: .\publish\version.txt 
