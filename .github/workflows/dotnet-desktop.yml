@@ -52,8 +52,8 @@ jobs:
 
       - name: Set version
         id: set-version
-        run: echo "::set-output name=version::$(cat version.txt)"
-
+        run: echo "::set-output name=version::$(cat .\publish\version.txt)"
+    
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
