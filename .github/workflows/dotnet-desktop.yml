@@ -15,13 +15,13 @@ jobs:
 
     - name: Check if version.txt exists
       run: |
-        if not exist .\publish\version.txt (
-          echo "Creating version.txt"
-          echo %date% %time% > .\publish\version.txt
-        ) else (
-          echo "Updating version.txt"
-          echo %date% %time% > .\publish\version.txt
-        )
+        if (-not (Test-Path .\publish\version.txt)) {
+          Write-Host "Creating version.txt"
+          Get-Date | Out-File -FilePath .\publish\version.txt
+        } else {
+          Write-Host "Updating version.txt"
+          Get-Date | Out-File -FilePath .\publish\version.txt
+        }
 
     - name: Set version
       id: set-version
