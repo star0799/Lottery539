@@ -13,32 +13,26 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Check if version.txt exists
-      run: |
-        $versionFilePath = ".\publish\version.txt"
-        $versionDirectory = Get-Item -Path $versionFilePath | Select-Object -ExpandProperty Directory
-    
-        if (-not (Test-Path $versionDirectory)) {
-          Write-Host "Creating directory: $versionDirectory"
-          New-Item -ItemType Directory -Path $versionDirectory | Out-Null
-        }
-    
-        Write-Host "Creating version.txt"
-        Get-Date | Out-File -FilePath $versionFilePath
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Set version
       id: set-version
-      run: echo "::set-output name=version::$(cat .\publish\version.txt)"
+      run: |
+        # Set the version to a variable
+        export MY_VERSION=$(date +'%Y%m%d%H%M%S')
+        echo "::set-output name=version::$MY_VERSION"
 
     - name: Build
       run: |
         nuget restore Lottery539.sln
-        msbuild /p:Configuration=Release /p:Version=$(cat .\publish\version.txt) Lottery539.sln
+        msbuild /p:Configuration=Release /p:Version=$MY_VERSION Lottery539.sln
 
     - name: Publish
       run: |
         mkdir publish
         xcopy /y /s .\bin\Release\* .\publish\
+        echo $MY_VERSION > .\publish\version.txt
 
     - name: Package
       run: Compress-Archive -Path publish -DestinationPath output.zip
@@ -46,8 +40,8 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: build-artifact
-        path: .\publish
+        name: winforms-app
+        path: output.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -57,11 +51,11 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          name: build-artifact
+          name: winforms-app
 
       - name: Set version
         id: set-version
-        run: echo "::set-output name=version::$(cat .\publish\version.txt)"
+        run: echo "::set-output name=version::$MY_VERSION"
 
       - name: Create Release
         id: create_release
@@ -73,7 +67,7 @@ jobs:
           release_name: Release ${{ steps.set-version.outputs.version }}
           draft: false
           prerelease: false
-
+      
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
