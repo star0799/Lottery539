@@ -13,25 +13,29 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Check if version.txt exists
+      run: |
+        if not exist .\publish\version.txt (
+          echo "Creating version.txt"
+          echo %date% %time% > .\publish\version.txt
+        ) else (
+          echo "Updating version.txt"
+          echo %date% %time% > .\publish\version.txt
+        )
 
     - name: Set version
       id: set-version
-      run: |
-        $env:MY_VERSION = Get-Date -Format "yyyyMMddHHmmss"
-        echo "::set-output name=version::$env:MY_VERSION"
+      run: echo "::set-output name=version::$(cat .\publish\version.txt)"
 
     - name: Build
       run: |
         nuget restore Lottery539.sln
-        msbuild /p:Configuration=Release /p:Version=$env:MY_VERSION Lottery539.sln
+        msbuild /p:Configuration=Release /p:Version=$(cat .\publish\version.txt) Lottery539.sln
 
     - name: Publish
       run: |
         mkdir publish
         xcopy /y /s .\bin\Release\* .\publish\
-        echo $env:MY_VERSION > .\publish\version.txt
 
     - name: Package
       run: Compress-Archive -Path publish -DestinationPath output.zip
@@ -39,8 +43,8 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: winforms-app
-        path: output.zip
+        name: build-artifact
+        path: .\publish
 
   deploy:
     runs-on: ubuntu-latest
@@ -50,11 +54,11 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          name: winforms-app
+          name: build-artifact
 
       - name: Set version
         id: set-version
-        run: echo "::set-output name=version::${{ needs.build.outputs.MY_VERSION }}"
+        run: echo "::set-output name=version::$(cat .\publish\version.txt)"
 
       - name: Create Release
         id: create_release
@@ -62,11 +66,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ needs.build.outputs.MY_VERSION }}
-          release_name: Release ${{ needs.build.outputs.MY_VERSION }}
+          tag_name: ${{ steps.set-version.outputs.version }}
+          release_name: Release ${{ steps.set-version.outputs.version }}
           draft: false
           prerelease: false
-      
+
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
@@ -75,7 +79,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./output.zip
-          asset_name: Lottery539-${{ needs.build.outputs.MY_VERSION }}.zip
+          asset_name: Lottery539-${{ steps.set-version.outputs.version }}.zip
           asset_content_type: application/zip
           
       - name: Upload version.txt as artifact
