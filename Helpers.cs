@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -53,5 +54,6 @@ namespace Lottery539
             result = num.Split(',').ToList();
             return result;
         }
+        public static string GetConfigValue(string key) => ConfigurationManager.AppSettings[key]?.ToString();
     }
 }

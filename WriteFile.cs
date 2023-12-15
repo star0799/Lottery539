@@ -82,5 +82,14 @@ namespace Lottery539
             // 保存按日期排序的数据
             File.WriteAllLines(FileName, existingLines);
         }
+        public void WriteVersion(string version)
+        {
+            string FileName = Path.Combine(path, "version" + ".txt");
+            if (!File.Exists(FileName))
+            {
+                File.Create(FileName).Close();
+            }
+            File.WriteAllText(FileName, version);
+        }
     }
 }

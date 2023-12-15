@@ -10,7 +10,7 @@ namespace Lottery539
 {
     class ReadFile
     {
-        string path = Path.Combine(System.Windows.Forms.Application.StartupPath);
+        static string path = Path.Combine(System.Windows.Forms.Application.StartupPath);
         log log = new log();
         string fileName = "Lottery";
         //從txt讀檔轉成list
@@ -44,6 +44,16 @@ namespace Lottery539
                 log.WriteLog("ReadFileToList錯誤:" + ex.Message);
             }
             return ListLotteryData;
+        }
+        public static string ReadVersion()
+        {
+            string fileName = Path.Combine(path, "version.txt");
+
+            if (File.Exists(fileName))
+            {
+                return File.ReadAllText(fileName);
+            }
+            return string.Empty;
         }
     }
 }

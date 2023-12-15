@@ -42,9 +42,9 @@ namespace Lottery539
         {           
             try
             {
-                int dayRange = Convert.ToInt32(GetConfigValue("DayRange"));
+                int dayRange = Convert.ToInt32(Helpers.GetConfigValue("DayRange"));
                 string endDate = DateTime.Now.ToString("yyyy-MM-dd");
-                string lotteryUrl = GetConfigValue("LotteryUrl") ?? "http://lotto.arclink.com.tw/";
+                string lotteryUrl = Helpers.GetConfigValue("LotteryUrl") ?? "http://lotto.arclink.com.tw/";
 
                 DateTime date = DateTime.Now.AddDays(dayRange);
                 if (date.DayOfWeek == DayOfWeek.Sunday)
@@ -54,8 +54,8 @@ namespace Lottery539
                 driver.Navigate().GoToUrl(lotteryUrl);
                 wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
                 driver.SwitchTo().Frame("dynamicInfo");
-                driver.FindElement(By.Name("userName")).SendKeys(GetConfigValue("UserId"));
-                driver.FindElement(By.Name("password")).SendKeys(GetConfigValue("UserPwd"));
+                driver.FindElement(By.Name("userName")).SendKeys(Helpers.GetConfigValue("UserId"));
+                driver.FindElement(By.Name("password")).SendKeys(Helpers.GetConfigValue("UserPwd"));
                 IWebElement loginBtn = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath($"/html/body/div/form/table/tbody/tr/td[3]/input")));
                 loginBtn.Click();
                 driver.SwitchTo().DefaultContent();
@@ -102,6 +102,5 @@ namespace Lottery539
                 log.WriteLog("GetData錯誤 : " + ex.Message);
             }
         }
-        private string GetConfigValue(string key) => ConfigurationManager.AppSettings[key]?.ToString();
     }
 }
