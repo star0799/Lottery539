@@ -50,7 +50,7 @@ jobs:
     steps:
       - name: Show MY_VERSION and Contents
         run: |
-          echo "MY_VERSION: $env:MY_VERSION"
+          echo "MY_VERSION: $MY_VERSION"
           find . -type f -exec cat {} \;
             
       - name: Download artifact
