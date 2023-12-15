@@ -19,20 +19,18 @@ jobs:
     - name: Set version
       id: set-version
       run: |
-        # Set the version to an environment variable
-        $env:MY_VERSION = Get-Date -Format 'yyyyMMddHHmmss'
-        echo "::set-output name=version::$env:MY_VERSION"
+        echo "MY_VERSION=$(date +'%Y%m%d%H%M%S')" > version.txt
+        echo "::set-output name=version::$(cat version.txt)"
 
     - name: Build
       run: |
         nuget restore Lottery539.sln
-        msbuild /p:Configuration=Release /p:Version=$env:MY_VERSION Lottery539.sln
+        msbuild /p:Configuration=Release /p:Version=$(cat version.txt) Lottery539.sln
 
     - name: Publish
       run: |
         mkdir publish
         xcopy /y /s .\bin\Release\* .\publish\
-        echo $env:MY_VERSION > .\publish\version.txt
 
     - name: Package
       run: Compress-Archive -Path publish -DestinationPath output.zip
@@ -48,11 +46,6 @@ jobs:
     needs: build
 
     steps:
-      - name: Show MY_VERSION and Contents
-        run: |
-          echo "MY_VERSION: $MY_VERSION"
-          find . -type f -exec cat {} \;
-            
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
@@ -60,7 +53,10 @@ jobs:
 
       - name: Set version
         id: set-version
-        run: echo "::set-output name=version::$env:MY_VERSION"
+        run: echo "::set-output name=version::$(cat version.txt)"
+
+      - name: Show MY_VERSION
+        run: echo "MY_VERSION: $MY_VERSION"
 
       - name: Create Release
         id: create_release
@@ -88,4 +84,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
             name: version-info
-            path: .\publish\version.txt 
+            path: version.txt
