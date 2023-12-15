@@ -55,9 +55,6 @@ jobs:
         id: set-version
         run: echo "::set-output name=version::$(cat version.txt)"
 
-      - name: Show MY_VERSION
-        run: echo "MY_VERSION: $MY_VERSION"
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
