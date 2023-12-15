@@ -18,32 +18,22 @@ jobs:
 
     - name: Set version
       id: set-version
-      run: |
-        # Read the current version from version.txt
-        $current_version = Get-Content version.txt
-        
-        # Increment the version number
-        $new_version = $current_version -replace '(\d+)$', {param($m) ($m.Groups[1].Value + 1)}
-        
-        # Update version.txt with the new version
-        $new_version | Set-Content -Path version.txt
-
-        # Set the output variable
-        echo "::set-output name=version::$new_version"
+      run: echo "::set-output name=version::$(date +'%Y.%m.%d.%H%M%S')"
 
     - name: Build
       run: |
         nuget restore Lottery539.sln
-        msbuild /p:Configuration=Release /p:Version=$(cat version.txt) Lottery539.sln
+        msbuild /p:Configuration=Release /p:Version=${{ steps.set-version.outputs.version }} Lottery539.sln
 
     - name: Publish
       run: |
         mkdir publish
         xcopy /y /s .\bin\Release\* .\publish\
+        echo ${{ steps.set-version.outputs.version }} > .\publish\version.txt
 
     - name: Package
       run: Compress-Archive -Path publish -DestinationPath output.zip
-
+      
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
@@ -62,12 +52,7 @@ jobs:
 
       - name: Set version
         id: set-version
-        run: |
-          # Read the current version from version.txt
-          $current_version = Get-Content version.txt
-          
-          # Set the output variable
-          echo "::set-output name=version::$current_version"
+        run: echo "::set-output name=version::$(date +'%Y.%m.%d.%H%M%S')"
 
       - name: Create Release
         id: create_release
@@ -94,5 +79,5 @@ jobs:
       - name: Upload version.txt as artifact
         uses: actions/upload-artifact@v2
         with:
-          name: version-info
-          path: version.txt
+            name: version-info
+            path: .\publish\version.txt
