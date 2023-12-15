@@ -19,18 +19,24 @@ jobs:
     - name: Set version
       id: set-version
       run: |
-        # Read the current version from version.txt
-        current_version=$(Get-Content .\publish\version.txt)
-        
-        # Split the current version into Major, Minor, and Patch components
-        $versionComponents = $current_version -split '\.'
-        
-        # Increment the Patch version
-        $new_patch_version = $versionComponents[2] + 1
-        
-        # Update version.txt with the new version
-        $new_version = "$($versionComponents[0]).$($versionComponents[1]).$new_patch_version"
-        echo $new_version > .\publish\version.txt
+        if (Test-Path .\publish\version.txt) {
+          # Read the current version from version.txt
+          current_version=$(Get-Content .\publish\version.txt)
+          
+          # Split the current version into Major, Minor, and Patch components
+          $versionComponents = $current_version -split '\.'
+          
+          # Increment the Patch version
+          $new_patch_version = $versionComponents[2] + 1
+          
+          # Update version.txt with the new version
+          $new_version = "$($versionComponents[0]).$($versionComponents[1]).$new_patch_version"
+          echo $new_version > .\publish\version.txt
+        } else {
+          # Set initial version to 1.0.0
+          echo "1.0.0" > .\publish\version.txt
+          $new_version = "1.0.0"
+        }
 
         # Set the output variable
         echo "::set-output name=version::$new_version"
@@ -38,7 +44,7 @@ jobs:
     - name: Build
       run: |
         nuget restore Lottery539.sln
-        msbuild /p:Configuration=Release /p:Version=$(cat .\publish\version.txt) Lottery539.sln
+        msbuild /p:Configuration=Release /p:Version=${{ steps.set-version.outputs.version }} Lottery539.sln
 
     - name: Publish
       run: |
@@ -69,7 +75,7 @@ jobs:
         id: set-version
         run: |
           # Read the current version from version.txt
-          current_version=$(Get-Content .\publish\version.txt)
+          current_version=$(Get-Content winforms-app\version.txt)
           
           # Set the output variable
           echo "::set-output name=version::$current_version"
@@ -99,5 +105,5 @@ jobs:
       - name: Upload version.txt as artifact
         uses: actions/upload-artifact@v2
         with:
-          name: version-info
-          path: .\publish\version.txt
+            name: version-info
+            path: winforms-app\version.txt 
