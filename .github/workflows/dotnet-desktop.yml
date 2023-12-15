@@ -48,6 +48,11 @@ jobs:
     needs: build
 
     steps:
+      - name: Show MY_VERSION and Contents
+        run: |
+            echo "MY_VERSION: $env:MY_VERSION"
+            Get-ChildItem -Recurse | ForEach-Object { Get-Content $_.FullName }
+            
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
