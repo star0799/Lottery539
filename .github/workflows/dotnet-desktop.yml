@@ -19,38 +19,19 @@ jobs:
     - name: Set version
       id: set-version
       run: |
-        if (Test-Path .\publish\version.txt) {
-          # Read the current version from version.txt
-          current_version=$(Get-Content .\publish\version.txt)
-          
-          # Split the current version into Major, Minor, and Patch components
-          $versionComponents = $current_version -split '\.'
-          
-          # Increment the Patch version
-          $new_patch_version = $versionComponents[2] + 1
-          
-          # Update version.txt with the new version
-          $new_version = "$($versionComponents[0]).$($versionComponents[1]).$new_patch_version"
-          echo $new_version > .\publish\version.txt
-        } else {
-          # Set initial version to 1.0.0
-          echo "1.0.0" > .\publish\version.txt
-          $new_version = "1.0.0"
-        }
-
-        # Set the output variable
-        echo "::set-output name=version::$new_version"
+        export MY_VERSION=$(date +'%Y%m%d%H%M%S')
+        echo "::set-output name=version::$MY_VERSION"
 
     - name: Build
       run: |
         nuget restore Lottery539.sln
-        msbuild /p:Configuration=Release /p:Version=${{ steps.set-version.outputs.version }} Lottery539.sln
+        msbuild /p:Configuration=Release /p:Version=${MY_VERSION} Lottery539.sln
 
     - name: Publish
       run: |
         mkdir publish
         xcopy /y /s .\bin\Release\* .\publish\
-        echo ${{ steps.set-version.outputs.version }} > .\publish\version.txt
+        echo $MY_VERSION > .\publish\version.txt
 
     - name: Package
       run: Compress-Archive -Path publish -DestinationPath output.zip
@@ -73,12 +54,7 @@ jobs:
 
       - name: Set version
         id: set-version
-        run: |
-          # Read the current version from version.txt
-          current_version=$(Get-Content winforms-app\version.txt)
-          
-          # Set the output variable
-          echo "::set-output name=version::$current_version"
+        run: echo "::set-output name=version::${{ needs.build.outputs.MY_VERSION }}"
 
       - name: Create Release
         id: create_release
@@ -106,4 +82,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
             name: version-info
-            path: winforms-app\version.txt 
+            path: .\publish\version.txt 
