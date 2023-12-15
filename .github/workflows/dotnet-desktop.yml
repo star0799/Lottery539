@@ -19,20 +19,20 @@ jobs:
     - name: Set version
       id: set-version
       run: |
-        # Set the version to a variable
-        export MY_VERSION=$(date +'%Y%m%d%H%M%S')
-        echo "::set-output name=version::$MY_VERSION"
+        # Set the version to an environment variable
+        $env:MY_VERSION = Get-Date -Format 'yyyyMMddHHmmss'
+        echo "::set-output name=version::$env:MY_VERSION"
 
     - name: Build
       run: |
         nuget restore Lottery539.sln
-        msbuild /p:Configuration=Release /p:Version=$MY_VERSION Lottery539.sln
+        msbuild /p:Configuration=Release /p:Version=$env:MY_VERSION Lottery539.sln
 
     - name: Publish
       run: |
         mkdir publish
         xcopy /y /s .\bin\Release\* .\publish\
-        echo $MY_VERSION > .\publish\version.txt
+        echo $env:MY_VERSION > .\publish\version.txt
 
     - name: Package
       run: Compress-Archive -Path publish -DestinationPath output.zip
@@ -55,7 +55,7 @@ jobs:
 
       - name: Set version
         id: set-version
-        run: echo "::set-output name=version::$MY_VERSION"
+        run: echo "::set-output name=version::$env:MY_VERSION"
 
       - name: Create Release
         id: create_release
