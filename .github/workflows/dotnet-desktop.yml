@@ -53,6 +53,9 @@ jobs:
       - name: Set version
         id: set-version
         run: echo "::set-output name=version::$(cat .\publish\version.txt)"
+
+      - name: List directory contents
+        run: ls
     
       - name: Create Release
         id: create_release
