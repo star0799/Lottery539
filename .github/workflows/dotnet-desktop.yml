@@ -62,8 +62,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.set-version.outputs.version }}
-          release_name: Release ${{ steps.set-version.outputs.version }}
+          tag_name: ${{ needs.build.outputs.MY_VERSION }}
+          release_name: Release ${{ needs.build.outputs.MY_VERSION }}
           draft: false
           prerelease: false
       
@@ -75,7 +75,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./output.zip
-          asset_name: Lottery539-${{ steps.set-version.outputs.version }}.zip
+          asset_name: Lottery539-${{ needs.build.outputs.MY_VERSION }}.zip
           asset_content_type: application/zip
           
       - name: Upload version.txt as artifact
