@@ -13,23 +13,23 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.0.2
+
     - name: Set version
       id: set-version
-      run: |
-        current_version=$(Get-Content version.txt)    
-        new_version=$(echo $current_version | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
-        echo $new_version > version.txt
-        echo "::set-output name=version::$new_version"
+      run: echo "::set-output name=version::$(date +'%Y%m%d%H%M%S')"
 
     - name: Build
       run: |
         nuget restore Lottery539.sln
-        msbuild /p:Configuration=Release /p:Version=${{ steps.set-version.outputs.version }} Lottery539.sln
+        msbuild /p:Configuration=Release /p:Version=$(date +'%Y%m%d%H%M%S') Lottery539.sln
 
     - name: Publish
       run: |
         mkdir publish
         xcopy /y /s .\bin\Release\* .\publish\
+        echo ${{ steps.set-version.outputs.version }} > .\publish\version.txt
 
     - name: Package
       run: Compress-Archive -Path publish -DestinationPath output.zip
@@ -52,18 +52,7 @@ jobs:
 
       - name: Set version
         id: set-version
-        run: |
-          # Read the current version from version.txt
-          version=$(cat version.txt)
-          
-          # Increment the version number
-          new_version=$(echo $version | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
-          
-          # Update version.txt with the new version
-          echo $new_version > version.txt
-
-          # Set the output variable
-          echo "::set-output name=version::$new_version"
+        run: echo "::set-output name=version::$(date +'%Y%m%d%H%M%S')"
 
       - name: Create Release
         id: create_release
@@ -91,4 +80,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
             name: version-info
-            path: version.txt
+            path: .\publish\version.txt 
