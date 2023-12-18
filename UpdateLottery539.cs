@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
@@ -9,11 +10,13 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Lottery539
 {
     public class UpdateLottery539
     {
+        private static readonly IFileSystem fileSystem = new FileSystem();
         static string owner = Helpers.GetConfigValue("GithubUser");
         static string repo = Helpers.GetConfigValue("GithubRepo");
         public static bool IsUpdate(out string url)
@@ -73,10 +76,44 @@ namespace Lottery539
 
             // Unzip the file
             string extractPath = Path.GetDirectoryName(filePath);
+            //壓縮檔內有一層publish，先判斷有無存在先刪除否則解壓縮會異常
+            string publishPath = Path.Combine(extractPath, "publish");
+            if (Directory.Exists(publishPath))
+            {
+                Directory.Delete(publishPath, true);
+            }
             ZipFile.ExtractToDirectory(filePath, extractPath);
 
             // Optionally, you can delete the original zip file if needed
             File.Delete(filePath);
+        }
+
+        public static void MoveAndReplaceFiles()
+        {
+            string sourceDirectory = Path.Combine(Application.StartupPath, "publish");
+            string destinationDirectory = Application.StartupPath;
+
+            // 检查源目录是否存在
+            if (fileSystem.Directory.Exists(sourceDirectory))
+            {
+                // 复制源目录下的所有文件到目标目录，并允许覆盖现有文件
+                foreach (string filePath in fileSystem.Directory.GetFiles(sourceDirectory))
+                {
+                    string fileName = fileSystem.Path.GetFileName(filePath);
+                    string destinationPath = fileSystem.Path.Combine(destinationDirectory, fileName);
+
+                    fileSystem.File.Copy(filePath, destinationPath, true);
+                }
+
+                // 删除源目录
+                fileSystem.Directory.Delete(sourceDirectory, true);
+
+                Console.WriteLine("Files moved and directory deleted.");
+            }
+            else
+            {
+                Console.WriteLine("Source directory not found.");
+            }
         }
 
         static bool IsNewVersion(string latestVersion, string currentVersion)
