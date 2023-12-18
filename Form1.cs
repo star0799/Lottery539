@@ -34,7 +34,7 @@ namespace Lottery539
                 SeleniumChrome seleniumChrome = new SeleniumChrome();
                 seleniumChrome.LoadData();
                 log.WriteLog("爬蟲完成!");
-                MessageBox.Show("更新完成");
+                MessageBox.Show("資料更新完成");
             }
             catch (Exception ex)
             {
@@ -44,8 +44,8 @@ namespace Lottery539
         }
 
         private void btnQuery_Click(object sender, EventArgs e)
-        {      
-            LoadDataToListView();                   
+        {
+            LoadDataToListView();
         }
         private void LoadDataToListView()
         {
@@ -55,7 +55,7 @@ namespace Lottery539
             datas = readFile.ReadTxtFile();
             log.WriteLog("匯入資料完成...");
             Dictionary<string, int> groupNum = new Dictionary<string, int>();
-            int MaxVal =0;
+            int MaxVal = 0;
             int MinVal = 0;
             if (!string.IsNullOrEmpty(tbMax.Text.Trim()))
             {
@@ -73,21 +73,21 @@ namespace Lottery539
             {
                 tbMin.Text = "0";
             }
-            LotteryData nextIssue =GetNextIssue(datas);
+            LotteryData nextIssue = GetNextIssue(datas);
             LotteryData previousIssue = GetPreviousIssue(datas);
             var queryDatas = QueryDate(datas);
             groupNum = GetGroupNum(queryDatas);
 
             List<LotteryData> allData = new List<LotteryData>(queryDatas);
-            if(previousIssue!=null)
-            allData.Add(previousIssue);
-            var noFinalIssue= GetGroupNum(allData.Skip(1).ToList());
+            if (previousIssue != null)
+                allData.Add(previousIssue);
+            var noFinalIssue = GetGroupNum(allData.Skip(1).ToList());
             int[] intNumsCount = groupNum.Values.ToArray();
             string[] numsCount = intNumsCount.Select(x => x.ToString()).ToArray();
 
             lvStatistics.Font = new Font(lvStatistics.Font, FontStyle.Bold);
             foreach (var nums in groupNum)
-            lvStatistics.Columns.Add(nums.Key,40);
+                lvStatistics.Columns.Add(nums.Key, 40);
             lvStatistics.Items.Add(new ListViewItem(numsCount));
             lvStatistics.Items[0].Font = new Font("新細明體", 12f, FontStyle.Regular);
 
@@ -122,13 +122,13 @@ namespace Lottery539
                 }
                 else
                 {
-                    hotPointNumString = GetPointNum(queryDatas.Count,d.LotteryDate, queryDatas[queryDatas.IndexOf(d) -1].Numbers,true);
-                    coldPointNumString = GetPointNum(queryDatas.Count, d.LotteryDate, queryDatas[queryDatas.IndexOf(d) -1].Numbers,false);
+                    hotPointNumString = GetPointNum(queryDatas.Count, d.LotteryDate, queryDatas[queryDatas.IndexOf(d) - 1].Numbers, true);
+                    coldPointNumString = GetPointNum(queryDatas.Count, d.LotteryDate, queryDatas[queryDatas.IndexOf(d) - 1].Numbers, false);
                 }
                 //coldPointCount= GetPointCount(coldPointNumString).ToString();
-                lvShow.Items.Add(new ListViewItem(new string[] { d.Issue,d.LotteryDate,d.Numbers, hotPointNumString,coldPointNumString }));
+                lvShow.Items.Add(new ListViewItem(new string[] { d.Issue, d.LotteryDate, d.Numbers, hotPointNumString, coldPointNumString }));
             }
-            tbLotteryType.Text = queryDatas.Count.ToString() ;
+            tbLotteryType.Text = queryDatas.Count.ToString();
             lvNumResult.Items.Add(new ListViewItem(new string[] { horNumString, hotNums.Count.ToString(), coldNumString, coldNums.Count.ToString() }));
         }
         private Dictionary<string, int> GetGroupNum(List<LotteryData> datas)
@@ -147,7 +147,7 @@ namespace Lottery539
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            dtStart.Value=GetDayByIssueCount(48, dtEnd.Value.Date);
+            dtStart.Value = GetDayByIssueCount(48, dtEnd.Value.Date);
             ReloadListView();
         }
         private void ReloadListView()
@@ -176,26 +176,26 @@ namespace Lottery539
             lvNumResult.Columns.Add("冷門號", 600);
             lvNumResult.Columns.Add("支數", 80);
         }
-        public string GetPointNum(int queryCount,string nowDay, string num,bool IsMax)
+        public string GetPointNum(int queryCount, string nowDay, string num, bool IsMax)
         {
             string result = string.Empty;
-            List<string> numList=helpers.GetNumList(num);
+            List<string> numList = helpers.GetNumList(num);
             List<LotteryData> rangeData = datas.Where(q => Convert.ToDateTime(q.LotteryDate) <= Convert.ToDateTime(nowDay)).Take(queryCount).ToList();
             List<KeyValuePair<string, int>> groupDic = new List<KeyValuePair<string, int>>();
-            
-            if(IsMax)
+
+            if (IsMax)
                 groupDic = GetGroupNum(rangeData).Where(g => g.Value >= Convert.ToInt16(tbMax.Text)).ToList();
             else
                 groupDic = GetGroupNum(rangeData).Where(g => g.Value <= Convert.ToInt16(tbMin.Text)).ToList();
 
             foreach (var g in groupDic)
             {
-                foreach(var n in numList)
-                if (g.Key==n)
-                {
+                foreach (var n in numList)
+                    if (g.Key == n)
+                    {
                         result += n + ",";
                         break;
-                }
+                    }
             }
             try
             {
@@ -229,7 +229,7 @@ namespace Lottery539
         private int GetPointCount(string num)
         {
             int result = 0;
-            if(num.Trim().Length!=0)
+            if (num.Trim().Length != 0)
             {
                 result = num.Split(',').Count();
             }
@@ -276,16 +276,16 @@ namespace Lottery539
             DateTime day = endDay;
             int count = 0;
             try
-            {               
+            {
                 while (count != issues)
-                {                    
+                {
                     if (day.DayOfWeek != DayOfWeek.Sunday)
-                        count++;                                    
-                    result=day.AddDays(-1);
+                        count++;
+                    result = day.AddDays(-1);
                     day = result;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.WriteLog(ex.Message);
             }
@@ -294,9 +294,9 @@ namespace Lottery539
         private List<string> DeductNums(List<string> nums, Dictionary<string, int> groupNum)
         {
             List<string> result = new List<string>();
-            foreach(var d in nums)
+            foreach (var d in nums)
             {
-                var val=groupNum[d];
+                var val = groupNum[d];
                 groupNum[d] = val - 1;
             }
             return result;
@@ -306,7 +306,7 @@ namespace Lottery539
             LotteryData result = new LotteryData();
             DateTime date = dtEnd.Value.Date;
             if (!IsLotteryDay(date))
-                date=date.AddDays(1);
+                date = date.AddDays(1);
             result = datas.Where(d => Convert.ToDateTime(d.LotteryDate).Date > date).LastOrDefault();
             return result;
         }
@@ -326,7 +326,7 @@ namespace Lottery539
             {
                 return false;
             }
-            else 
+            else
             {
                 return true;
             }
@@ -354,7 +354,7 @@ namespace Lottery539
             datas = readFile.ReadTxtFile();
             log.WriteLog("匯入資料2完成...");
             var queryDatas = datas.Where(d => Convert.ToDateTime(d.LotteryDate).Date >= dtStart2.Value.Date && Convert.ToDateTime(d.LotteryDate).Date <= dtEnd2.Value.Date).ToList();
-            tbPeriod2.Text=queryDatas.Count.ToString();
+            tbPeriod2.Text = queryDatas.Count.ToString();
             //foreach (var queryData in queryDatas)
             //    tbResult2.Text += queryData.Numbers + Environment.NewLine;
             if (queryDatas.Count > 0)
@@ -364,7 +364,7 @@ namespace Lottery539
                 lvResult2.Items.AddRange(result.Select(d => new ListViewItem(new[] { d.id.ToString(), d.NextIssue, d.NextLotteryDate, d.NextNumbers })).ToArray());
                 lbAllCount.Text = "資料總筆數: " + datas.Count.ToString();
                 lbCount.Text = "筆數: " + lotteryCompareLotteryDatas.Count.ToString();
-                lbMaxDate.Text = "最新日期: " + datas.Max(d=>d.LotteryDate);
+                lbMaxDate.Text = "最新日期: " + datas.Max(d => d.LotteryDate);
             }
             else
             {
@@ -373,8 +373,8 @@ namespace Lottery539
         }
         private List<LotteryCompareLotteryData> CompareLotteryData(List<LotteryData> AllDatas, List<LotteryData> BenchMark)
         {
-            List<LotteryCompareLotteryData> result=new List<LotteryCompareLotteryData>();
-            
+            List<LotteryCompareLotteryData> result = new List<LotteryCompareLotteryData>();
+
             List<LotteryData> tempList = new List<LotteryData>();
             // 比對 A 和 B 的資料
             for (int i = 0; i <= AllDatas.Count - BenchMark.Count; i++)
@@ -383,15 +383,15 @@ namespace Lottery539
                 {
                     continue; // Issue 相同，直接跳過
                 }
-                bool isMatch = true;            
+                bool isMatch = true;
                 for (int j = 0; j < BenchMark.Count; j++)
                 {
                     var getMatchedNumbers = string.Empty;
-                        if (!IsNumberMatch(AllDatas[i + j].Numbers, BenchMark[j].Numbers, out getMatchedNumbers))
-                        {
-                            isMatch = false;
-                            break; // 一旦有不符合的數字就跳出迴圈
-                        }
+                    if (!IsNumberMatch(AllDatas[i + j].Numbers, BenchMark[j].Numbers, out getMatchedNumbers))
+                    {
+                        isMatch = false;
+                        break; // 一旦有不符合的數字就跳出迴圈
+                    }
                     LotteryData tempLotteryData = new LotteryData()
                     {
                         Issue = AllDatas[i + j].Issue,
@@ -399,7 +399,7 @@ namespace Lottery539
                         LotteryDate = AllDatas[i + j].LotteryDate,
                         PointNumbers = getMatchedNumbers
                     };
-                    tempList.Add(tempLotteryData);                    
+                    tempList.Add(tempLotteryData);
                 }
 
                 if (isMatch)
@@ -408,12 +408,12 @@ namespace Lottery539
                     {
                         LotteryCompareLotteryData data = new LotteryCompareLotteryData()
                         {
-                            id=queryId,
+                            id = queryId,
                             Datas = tempList.ToList(),
                             NextLotteryDate = "未開獎",
                             NextIssue = "未開獎",
                             NextNumbers = "未開獎",
-                            BenchmarDatas= BenchMark
+                            BenchmarDatas = BenchMark
                         };
                         queryId++;
                         result.Add(data);
@@ -431,7 +431,7 @@ namespace Lottery539
                         };
                         queryId++;
                         result.Add(data);
-                    }                        
+                    }
                 }
                 tempList.Clear();
             }
@@ -474,7 +474,7 @@ namespace Lottery539
             lvDetail2.GridLines = true;
             lvDetail2.FullRowSelect = true;
             lvDetail2.Columns.Add("期號", 200);
-            lvDetail2.Columns.Add("日期", 300);           
+            lvDetail2.Columns.Add("日期", 300);
             lvDetail2.Columns.Add("", 40);
             lvDetail2.Columns.Add("", 40);
             lvDetail2.Columns.Add("", 40);
@@ -519,8 +519,8 @@ namespace Lottery539
             else if (tabControl1.SelectedTab == tabControl1.TabPages["tabPage2"])//your specific tabname
             {
                 ReloadListView2();
-                dtStart2.Value  = GetDayByIssueCount(5, dtEnd.Value.Date); // 設定起始日期
-                dtEnd2.Value = DateTime.Now.Date;              
+                dtStart2.Value = GetDayByIssueCount(5, dtEnd.Value.Date); // 設定起始日期
+                dtEnd2.Value = DateTime.Now.Date;
                 //tbPeriod2GetIssueCount();
             }
         }
@@ -532,7 +532,7 @@ namespace Lottery539
                 ReloadlvBenchmark();
                 // 獲取總表選中的項目 
                 var selectedItem = lvResult2.SelectedItems[0];
-                var selectedID =Convert.ToInt16(selectedItem.SubItems[0].Text);
+                var selectedID = Convert.ToInt16(selectedItem.SubItems[0].Text);
 
                 // 清空明細表中的項目 
                 lvDetail2.Items.Clear();
@@ -548,7 +548,7 @@ namespace Lottery539
                     for (int i = 0; i < 5; i++)
                     {
                         var number = numbers[i];
-                        var isPointNumber = pointNumbers.Contains(number); 
+                        var isPointNumber = pointNumbers.Contains(number);
 
                         if (isPointNumber)
                         {
@@ -563,16 +563,16 @@ namespace Lottery539
                     }
                     lvDetail2.Items.Add(listViewItem);
                 }
-                    var benchmarkDatas = lotteryCompareLotteryDatas.Where(w => w.id == selectedID).Select(x => x.BenchmarDatas).FirstOrDefault();
-                    lvBenchmark.Items.AddRange(benchmarkDatas.Select(d => new ListViewItem(new[] { d.Issue, d.LotteryDate, d.Numbers })).ToArray());
-                    var maxIssue= benchmarkDatas.OrderByDescending(x => x.Issue).FirstOrDefault().Issue;
-                LotteryData nextData =GetNextIssue(maxIssue);
+                var benchmarkDatas = lotteryCompareLotteryDatas.Where(w => w.id == selectedID).Select(x => x.BenchmarDatas).FirstOrDefault();
+                lvBenchmark.Items.AddRange(benchmarkDatas.Select(d => new ListViewItem(new[] { d.Issue, d.LotteryDate, d.Numbers })).ToArray());
+                var maxIssue = benchmarkDatas.OrderByDescending(x => x.Issue).FirstOrDefault().Issue;
+                LotteryData nextData = GetNextIssue(maxIssue);
                 lvNextIssue.Clear();
                 lvNextIssue.View = View.Details;
                 lvNextIssue.Columns.Add("", 150);
                 lvNextIssue.Columns.Add("", 180);
                 lvNextIssue.Columns.Add("", 300);
-                lvNextIssue.Items.Add(new ListViewItem(new string[] { nextData.Issue, nextData.LotteryDate, nextData.Numbers}));
+                lvNextIssue.Items.Add(new ListViewItem(new string[] { nextData.Issue, nextData.LotteryDate, nextData.Numbers }));
             }
         }
         private LotteryData GetNextIssue(string maxIssue)
@@ -586,8 +586,8 @@ namespace Lottery539
                 // 执行想要的操作
                 return previousRecord;
             }
-            else 
-                return new LotteryData { Issue="未開獎", LotteryDate = "未開獎" , Numbers = "未開獎" };
+            else
+                return new LotteryData { Issue = "未開獎", LotteryDate = "未開獎", Numbers = "未開獎" };
         }
 
         private void btnQueryAll_Click(object sender, EventArgs e)
@@ -597,10 +597,10 @@ namespace Lottery539
             ReadFile readFile = new ReadFile();
             datas = readFile.ReadTxtFile();
             log.WriteLog("匯入資料2 All完成...");
-             CompareAllLotteryData();
-            lotteryCompareLotteryDatas = lotteryCompareLotteryDatas.OrderByDescending(x=>x.NextIssue).ToList();
-             lvResult2.Items.AddRange(lotteryCompareLotteryDatas.Select(d => new ListViewItem(new[] { d.id.ToString(),d.NextIssue, d.NextLotteryDate, d.NextNumbers })).ToArray());
-            lbAllCount.Text = "資料總筆數: "+datas.Count.ToString();
+            CompareAllLotteryData();
+            lotteryCompareLotteryDatas = lotteryCompareLotteryDatas.OrderByDescending(x => x.NextIssue).ToList();
+            lvResult2.Items.AddRange(lotteryCompareLotteryDatas.Select(d => new ListViewItem(new[] { d.id.ToString(), d.NextIssue, d.NextLotteryDate, d.NextNumbers })).ToArray());
+            lbAllCount.Text = "資料總筆數: " + datas.Count.ToString();
             lbCount.Text = "筆數: " + lotteryCompareLotteryDatas.Count.ToString();
         }
         private void CompareAllLotteryData()
@@ -620,7 +620,7 @@ namespace Lottery539
             }
             for (int i = 0; i < datas.Count; i++)
             {
-                if(i+ range> datas.Count)
+                if (i + range > datas.Count)
                 {
                     break;
                 }

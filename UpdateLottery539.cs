@@ -19,21 +19,22 @@ namespace Lottery539
         private static readonly IFileSystem fileSystem = new FileSystem();
         static string owner = Helpers.GetConfigValue("GithubUser");
         static string repo = Helpers.GetConfigValue("GithubRepo");
+        static log log = new log();
         public static bool IsUpdate(out string url)
         {
-            string localVersion = ReadFile.ReadVersion(); 
-            string executablePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string localVersion = ReadFile.ReadVersion();
 
             ReleaseInfo release = GetLatestRelease();
 
-            if (release != null && IsNewVersion(release.tag_name, localVersion))
+            if (release != null && IsNewVersion(release.tag_name.Trim(), localVersion.Trim()))
             {
                 url = release.Assets[0].browser_download_url;
+                log.WriteLog("當前版本: " + localVersion + " , 新版本: " + release.tag_name);
                 return true;
             }
             else
             {
-                url=string.Empty;
+                url = string.Empty;
                 return false;
             }
         }
@@ -51,7 +52,6 @@ namespace Lottery539
                     ReleaseInfo release = JsonConvert.DeserializeObject<ReleaseInfo>(jsonContent);
                     return release;
                 }
-
                 return null;
             }
         }
@@ -107,12 +107,6 @@ namespace Lottery539
 
                 // 删除源目录
                 fileSystem.Directory.Delete(sourceDirectory, true);
-
-                Console.WriteLine("Files moved and directory deleted.");
-            }
-            else
-            {
-                Console.WriteLine("Source directory not found.");
             }
         }
 
