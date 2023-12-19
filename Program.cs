@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -9,7 +10,8 @@ namespace Lottery539
     static class Program
     {
         static string filePath = Application.StartupPath;
-        static string dataFileName = "Lottery.txt";
+        //不異動的檔案
+        static List<string> continueFiles = new List<string> { "Lottery.txt", "AutoLottery539.exe" };
         static log log = new log();
         [STAThread]
         static void Main()
@@ -26,7 +28,7 @@ namespace Lottery539
                     foreach (string fileToMove in filesToMove)
                     {
                         //資料檔不重製
-                        if (Path.GetFileName(fileToMove) == dataFileName)
+                        if (continueFiles.Contains(Path.GetFileName(fileToMove)))
                             continue;
                         string fileName = Path.GetFileName(fileToMove);
                         string tempFilePathForFile = Path.Combine(Path.GetTempPath(), fileName);
