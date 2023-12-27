@@ -11,7 +11,7 @@ namespace Lottery539
     {
         static string filePath = Application.StartupPath;
         //不異動的檔案
-        static List<string> continueFiles = new List<string> { "Lottery.txt", "AutoLottery539.exe" };
+        static List<string> continueFiles = new List<string> { "Lottery.txt", "AutoLottery539.exe", "config.ini" };
         static log log = new log();
         [STAThread]
         static void Main()
