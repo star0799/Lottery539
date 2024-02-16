@@ -26,6 +26,7 @@ namespace Lottery539
                 if (file.Count > 0)
                 clientMaxIssue =Convert.ToInt64(file.Max(f => f.Issue));
                 GetData();
+                log.WriteLog($"更新{lotteryDataList.Count}筆");
                 WriteFile writeFile = new WriteFile();
                 writeFile.WriteData(lotteryDataList);
             }
