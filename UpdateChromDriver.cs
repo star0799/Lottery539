@@ -19,6 +19,8 @@ namespace Lottery539
     class UpdateChromDriver
     {
         static log _log = new log();
+        static string zipName = "chromedriver.zip";
+        static string exeName = "chromedriver.exe";
         public void UpdateChromDriverFun()
         {
             string ChromeDriverPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -38,7 +40,7 @@ namespace Lottery539
             string driverversion = "";
             try
             {
-                if (File.Exists(ChromeDriverePath + "\\chromedriver.exe"))
+                if (File.Exists(ChromeDriverePath + "\\"+ exeName))
                 {
                     IWebDriver driver = new ChromeDriver(ChromeDriverePath);
                     ICapabilities capabilities = ((ChromeDriver)driver).Capabilities;
@@ -104,15 +106,17 @@ namespace Lottery539
         }
         static string GetURLToDownload(string version)
         {
-            if (String.IsNullOrEmpty(version))
+            if (string.IsNullOrEmpty(version))
             {
                 throw new ArgumentException("Unable to get url because version is empty");
             }
 
-            //URL's originates from here: https://chromedriver.chromium.org/downloads/version-selection
-            string html = string.Empty;
-            string urlToPathLocation = @"https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_" + String.Join(".", version.Split('.').Take(3));
+            string completeVersion = string.Empty;
+            string latestReleaseUrl = Helpers.GetConfigValue("ChromeLatestReleaseUrl");
+            //urlToPathLocation為大版本
+            string urlToPathLocation = latestReleaseUrl + String.Join(".", version.Split('.').Take(3));
 
+            //去找實際完整版號
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlToPathLocation);
             request.AutomaticDecompression = DecompressionMethods.GZip;
 
@@ -120,15 +124,16 @@ namespace Lottery539
             using (Stream stream = response.GetResponseStream())
             using (StreamReader reader = new StreamReader(stream))
             {
-                html = reader.ReadToEnd();
+                completeVersion = reader.ReadToEnd();
             }
 
-            if (String.IsNullOrEmpty(html))
+            if (String.IsNullOrEmpty(completeVersion))
             {
                 throw new WebException("Unable to get version path from website");
             }
-
-            return "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/" + html + "/win64/chromedriver-win64.zip";
+            string downloadUrl = Helpers.GetConfigValue("ChromeDownloadUrl");
+            string downloadFile = Helpers.GetConfigValue("ChromeDownloadFile");
+            return downloadUrl + completeVersion + downloadFile;
         }
         static void KillAllChromeDriverProcesses()
         {
@@ -153,16 +158,16 @@ namespace Lottery539
             }
             using (var client = new WebClient())
             {
-                if (File.Exists(ChromDriverPath + "\\chromedriver.zip"))
+                if (File.Exists(ChromDriverPath + "\\"+ zipName))
                 {
-                    File.Delete(ChromDriverPath + "\\chromedriver.zip");
+                    File.Delete(ChromDriverPath + "\\"+ zipName);
                 }
 
-                client.DownloadFile(urlToDownload, "chromedriver.zip");
+                client.DownloadFile(urlToDownload, zipName);
 
-                if (File.Exists(ChromDriverPath + "\\chromedriver.zip") && File.Exists(ChromDriverPath + "\\chromedriver.exe"))
+                if (File.Exists(ChromDriverPath + "\\"+ zipName) && File.Exists(ChromDriverPath + "\\"+ exeName))
                 {
-                    File.Delete(ChromDriverPath + "\\chromedriver.exe");
+                    File.Delete(ChromDriverPath + "\\"+ exeName);
                 }
 
             }
@@ -173,7 +178,7 @@ namespace Lottery539
             string zipFileName = "";
             try
             {
-                zipFileName = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "\\chromedriver.zip";
+                zipFileName = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "\\"+zipName;
                 string orgFileName = "";
                 using (Ionic.Zip.ZipFile zip = Ionic.Zip.ZipFile.Read(zipFileName))
                 {
@@ -195,12 +200,12 @@ namespace Lottery539
         public void MoveChromeDriver(string ChromeDriverPath)
         {
             // 构建chromedriver.exe的完整路径
-            string chromedriverExePath = Path.Combine(ChromeDriverPath, "chromedriver-win64", "chromedriver.exe");
+            string chromedriverExePath = Path.Combine(ChromeDriverPath, "chromedriver-win64", exeName);
 
             try
             {
                 // 移动chromedriver.exe到目标路径
-                File.Move(chromedriverExePath, Path.Combine(ChromeDriverPath, "chromedriver.exe"));
+                File.Move(chromedriverExePath, Path.Combine(ChromeDriverPath, exeName));
 
                 // 删除chromedriver-win64文件夹
                 Directory.Delete(Path.Combine(ChromeDriverPath, "chromedriver-win64"), true);
