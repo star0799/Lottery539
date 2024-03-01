@@ -27,7 +27,11 @@ namespace Lottery539
                 MessageBox.Show("欄位不得為空");
                 return;
             }
-            string[] arrNumbers = inputNumbers.Split(',');
+
+            char[] separators = { ',', '.',':','+','-','/','\\','`','，','。','?' };
+
+            // 去掉开头和结尾的逗号和句点，然后按逗号分割字符串
+            string[] arrNumbers = inputNumbers.Trim(separators).Split(separators);
             if (arrNumbers.Length != 5)
             {
                 MessageBox.Show("格式錯誤!");
