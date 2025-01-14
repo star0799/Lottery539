@@ -40,7 +40,7 @@ namespace Lottery539
             }
         }
         public void GetData()
-        {           
+        {
             try
             {
                 int dayRange = Convert.ToInt32(Helpers.GetConfigValue("DayRange"));
@@ -49,23 +49,62 @@ namespace Lottery539
 
                 DateTime date = DateTime.Now.AddDays(dayRange);
                 if (date.DayOfWeek == DayOfWeek.Sunday)
-                    date=date.AddDays(-1);
+                    date = date.AddDays(-1);
                 string startDate = date.ToString("yyyy-MM-dd");
 
                 driver.Navigate().GoToUrl(lotteryUrl);
-                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-                driver.SwitchTo().Frame("dynamicInfo");
+                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+                bool isLoaded = false;
+
+                // 設置動態框架超時
+                isLoaded = wait.Until(d =>
+                {
+                    try
+                    {
+                        driver.SwitchTo().Frame("dynamicInfo");
+                        return true;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                });
+
+                if (!isLoaded)
+                {
+                    log.WriteLog("切換到 dynamicInfo 框架超時");
+                    return;
+                }
                 driver.FindElement(By.Name("userName")).SendKeys(Helpers.GetConfigValue("UserId"));
                 driver.FindElement(By.Name("password")).SendKeys(Helpers.GetConfigValue("UserPwd"));
+
                 IWebElement loginBtn = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath($"/html/body/div/form/table/tbody/tr/td[3]/input")));
                 loginBtn.Click();
+
                 driver.SwitchTo().DefaultContent();
                 driver.Navigate().GoToUrl("http://lotto.arclink.com.tw/Lotto39List.html");
-                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
 
-                string dowpdownStartName = "periods1";
-                IWebElement dowpdownStartDate = wait.Until(ExpectedConditions.ElementToBeClickable(By.Id(dowpdownStartName)));
-                var selectElement = new SelectElement(dowpdownStartDate);
+                isLoaded = wait.Until(d =>
+                {
+                    try
+                    {
+                        IWebElement dropdownStartDate = driver.FindElement(By.Id("periods1"));
+                        return dropdownStartDate.Displayed;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                });
+
+                if (!isLoaded)
+                {
+                    log.WriteLog("載入期間選擇器超時");
+                    return;
+                }
+
+                IWebElement dropdown = driver.FindElement(By.Id("periods1"));
+                var selectElement = new SelectElement(dropdown);
                 selectElement.SelectByText(startDate);
 
                 while (selectElement.SelectedOption.Text != startDate)
@@ -97,6 +136,10 @@ namespace Lottery539
                     };
                     lotteryDataList.Add(lotteryData);
                 }
+            }
+            catch (WebDriverTimeoutException tex)
+            {
+                log.WriteLog("操作超時 : " + tex.Message);
             }
             catch (Exception ex)
             {
