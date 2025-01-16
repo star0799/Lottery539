@@ -53,7 +53,7 @@ namespace Lottery539
                 string startDate = date.ToString("yyyy-MM-dd");
 
                 driver.Navigate().GoToUrl(lotteryUrl);
-                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
                 bool isLoaded = false;
 
                 // 設置動態框架超時
