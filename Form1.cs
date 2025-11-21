@@ -26,7 +26,7 @@ namespace Lottery539
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            UpdateChromDriver updateChromDriver = new UpdateChromDriver();
+            UpdateChromeDriver updateChromDriver = new UpdateChromeDriver();
             updateChromDriver.UpdateChromDriverFun();
             log.WriteLog("爬蟲開始...");
             try
