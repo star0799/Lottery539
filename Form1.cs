@@ -146,6 +146,8 @@ namespace Lottery539
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            tabPage2.Resize += (_, __) => AdjustTabPage2TopLayout();
+            AdjustTabPage2TopLayout();
             dtStart.Value = GetDayByIssueCount(48, dtEnd.Value.Date);
             ReloadListView();
 
@@ -161,6 +163,45 @@ namespace Lottery539
             {
                 log.WriteLog("Hide tabPage1 failed: " + ex.Message);
             }
+        }
+        private void AdjustTabPage2TopLayout()
+        {
+            const int gap = 8;          // 左右兩塊中間的間距
+            const int rightMargin = 8;  // 右側留白
+
+            // 以 tabPage2 可用寬度來重新分配 lvResult2 / lvBenchmark
+            int totalWidth = tabPage2.ClientSize.Width - rightMargin;
+            if (totalWidth <= 300) return;
+
+            // 依你目前設計時的比例 (lvResult2=1019, lvBenchmark=899) 做等比例分配
+            double rightRatio = 899.0 / (1019.0 + 899.0);
+            int usable = Math.Max(0, totalWidth - lvResult2.Left - gap);
+
+            int rightWidth = (int)Math.Round(usable * rightRatio);
+            int leftWidth = usable - rightWidth;
+
+            // 設個最小寬度避免太小
+            const int minW = 250;
+            if (leftWidth < minW)
+            {
+                leftWidth = minW;
+                rightWidth = Math.Max(minW, usable - leftWidth);
+            }
+            if (rightWidth < minW)
+            {
+                rightWidth = minW;
+                leftWidth = Math.Max(minW, usable - rightWidth);
+            }
+
+            // 套用：lvResult2 在左、lvBenchmark 在右，永遠不重疊
+            lvResult2.Width = leftWidth;
+
+            lvBenchmark.Left = lvResult2.Right + gap;
+            lvBenchmark.Width = rightWidth;
+
+            // lvNextIssue 放大寬度要跟 lvBenchmark 一樣（同 Left / 同 Width）
+            lvNextIssue.Left = lvBenchmark.Left;
+            lvNextIssue.Width = lvBenchmark.Width;
         }
         private void ReloadListView()
         {
