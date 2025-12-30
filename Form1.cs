@@ -1,5 +1,4 @@
-﻿
-using Lottery539.Model;
+﻿using Lottery539.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -149,6 +148,19 @@ namespace Lottery539
         {
             dtStart.Value = GetDayByIssueCount(48, dtEnd.Value.Date);
             ReloadListView();
+
+            // 隱藏冷熱表的 tab (tabPage1)
+            try
+            {
+                if (tabControl1.TabPages.Contains(tabPage1))
+                {
+                    tabControl1.TabPages.Remove(tabPage1);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.WriteLog("Hide tabPage1 failed: " + ex.Message);
+            }
         }
         private void ReloadListView()
         {
