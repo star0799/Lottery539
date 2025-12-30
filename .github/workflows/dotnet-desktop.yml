@@ -5,40 +5,53 @@ on:
     branches:
       - master
 
+# 需要寫入 release
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.0.2
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
 
-    - name: Set version
-      id: set-version
-      run: echo "::set-output name=version::$(date +'%Y%m%d%H%M%S')"
+      - name: Set version
+        id: set-version
+        shell: pwsh
+        run: |
+          $version = Get-Date -Format "yyyyMMddHHmmss"
+          "version=$version" >> $env:GITHUB_OUTPUT
 
-    - name: Build
-      run: |
-        nuget restore Lottery539.sln
-        msbuild /p:Configuration=Release /p:Version=$(date +'%Y%m%d%H%M%S') Lottery539.sln
+      - name: Build
+        shell: pwsh
+        run: |
+          nuget restore Lottery539.sln
+          msbuild Lottery539.sln /p:Configuration=Release /p:Version=${{ steps.set-version.outputs.version }}
 
-    - name: Publish
-      run: |
-        mkdir publish
-        xcopy /y /s .\bin\Release\* .\publish\
-        echo ${{ steps.set-version.outputs.version }} > ./publish/version.txt
+      - name: Publish
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path publish | Out-Null
+          Copy-Item -Path .\bin\Release\* -Destination .\publish\ -Recurse -Force
+          "${{ steps.set-version.outputs.version }}" | Out-File -FilePath .\publish\version.txt -Encoding utf8
 
-    - name: Package
-      run: Compress-Archive -Path publish -DestinationPath output.zip
-      
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: winforms-app
-        path: output.zip
+      - name: Package
+        shell: pwsh
+        run: |
+          if (Test-Path .\output.zip) { Remove-Item .\output.zip -Force }
+          Compress-Archive -Path publish -DestinationPath output.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: winforms-app
+          path: output.zip
+          if-no-files-found: error
 
   deploy:
     runs-on: ubuntu-latest
@@ -46,41 +59,31 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: winforms-app
+          path: .
 
       - name: Set version
         id: set-version
         run: |
-          unzip output.zip -d extracted
-          cat extracted/publish/version.txt
-          echo "::set-output name=version::$(cat extracted/publish/version.txt)"
-    
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          unzip -o output.zip -d extracted
+          ver="$(cat extracted/publish/version.txt)"
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+          echo "Version: $ver"
+
+      - name: Create Release & Upload Asset
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.set-version.outputs.version }}
-          release_name: Release ${{ steps.set-version.outputs.version }}
-          draft: false
-          prerelease: false
-      
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
+          name: Release ${{ steps.set-version.outputs.version }}
+          files: output.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./output.zip
-          asset_name: Lottery539-${{ steps.set-version.outputs.version }}.zip
-          asset_content_type: application/zip
-          
+
       - name: Upload version.txt as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-            name: version-info
-            path: .\publish\version.txt 
+          name: version-info
+          path: extracted/publish/version.txt
+          if-no-files-found: error
