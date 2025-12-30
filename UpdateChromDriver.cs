@@ -118,6 +118,10 @@ namespace Lottery539
         private void DownloadAndExtractDriver(string url, string targetPath)
         {
             string zipPath = Path.Combine(targetPath, "chromedriver.zip");
+            string folderPath = Path.Combine(targetPath, ChromeDriverFolderName);
+
+            if (Directory.Exists(folderPath))
+                Directory.Delete(folderPath, true);
 
             using (var wc = new WebClient())
             {
@@ -125,10 +129,9 @@ namespace Lottery539
                 wc.DownloadFile(url, zipPath);
             }
 
-            // 解壓縮
             System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, targetPath);
 
-            string sourceExe = Path.Combine(targetPath, ChromeDriverFolderName, ChromeDriverExe);
+            string sourceExe = Path.Combine(folderPath, ChromeDriverExe);
             string destExe = Path.Combine(targetPath, ChromeDriverExe);
 
             if (File.Exists(destExe))
@@ -136,7 +139,7 @@ namespace Lottery539
 
             File.Move(sourceExe, destExe);
 
-            Directory.Delete(Path.Combine(targetPath, ChromeDriverFolderName), true);
+            Directory.Delete(folderPath, true);
             File.Delete(zipPath);
         }
 
