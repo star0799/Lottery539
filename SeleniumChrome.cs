@@ -13,11 +13,20 @@ namespace Lottery539
     class SeleniumChrome
     {
         WebDriverWait wait;
-        IWebDriver driver = new ChromeDriver();
+        IWebDriver driver;
         ReadFile readFile = new ReadFile();
         log log = new log();
         List<LotteryData> lotteryDataList = new List<LotteryData>();
         long clientMaxIssue = 0;
+
+        public SeleniumChrome()
+        {
+            var service = ChromeDriverService.CreateDefaultService();
+            service.HideCommandPromptWindow = true; // 不顯示 cmd 視窗
+            service.SuppressInitialDiagnosticInformation = true; // 關閉啟動時的診斷訊息
+            driver = new ChromeDriver(service);
+        }
+
         public void LoadData()
         {
             try
