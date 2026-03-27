@@ -1,16 +1,17 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 
 namespace Lottery539
 {
     public class UpdateChromeDriver
     {
-        private static string ChromeDriverExe = "chromedriver.exe";
-        private static string ChromeDriverFolderName = "chromedriver-win64"; // Google 新版的資料夾名稱
-        private static string LatestVersionApi = "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json";
+        private static readonly string ChromeDriverExe = "chromedriver.exe";
+        private static readonly string ChromeDriverFolderName = "chromedriver-win64";
+        private static readonly string KnownGoodVersionsApi = "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json";
 
         public void UpdateChromDriverFun()
         {
@@ -18,17 +19,14 @@ namespace Lottery539
             string chromeVersion = GetInstalledChromeVersion();
             string driverVersion = GetInstalledDriverVersion(exeDir);
 
-            if (driverVersion != chromeVersion)
+            if (!string.Equals(driverVersion, chromeVersion, StringComparison.OrdinalIgnoreCase))
             {
-                Console.WriteLine($"更新 ChromeDriver： {driverVersion} -> {chromeVersion}");
+                Console.WriteLine($"更新 ChromeDriver：{driverVersion} -> {chromeVersion}");
                 KillAllChromeDriverProcesses();
 
-                string downloadUrl = GetLatestDriverDownloadUrl(chromeVersion);
-                if (downloadUrl == null)
-                {
-                    Console.WriteLine("找不到對應版本，下載最新 LKG（Last Known Good）版本");
-                    downloadUrl = GetLastKnownGoodDriverUrl();
-                }
+                string downloadUrl = GetMatchingDriverDownloadUrl(chromeVersion);
+                if (string.IsNullOrWhiteSpace(downloadUrl))
+                    throw new Exception($"找不到與 Chrome {chromeVersion} 相容的 ChromeDriver 下載網址");
 
                 DownloadAndExtractDriver(downloadUrl, exeDir);
                 Console.WriteLine("ChromeDriver 更新完成！");
@@ -47,8 +45,10 @@ namespace Lottery539
                 if (!File.Exists(chromePath))
                     chromePath = @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe";
 
-                var version = FileVersionInfo.GetVersionInfo(chromePath).FileVersion;
-                return version.Split('.')[0]; // 大版本號即可，如 120
+                if (!File.Exists(chromePath))
+                    throw new FileNotFoundException("找不到 Chrome 執行檔");
+
+                return FileVersionInfo.GetVersionInfo(chromePath).FileVersion;
             }
             catch
             {
@@ -60,7 +60,7 @@ namespace Lottery539
         {
             string exePath = Path.Combine(path, ChromeDriverExe);
             if (!File.Exists(exePath))
-                return "";
+                return string.Empty;
 
             try
             {
@@ -70,49 +70,79 @@ namespace Lottery539
                     UseShellExecute = false,
                     CreateNoWindow = true
                 };
-                var p = Process.Start(psi);
-                string output = p.StandardOutput.ReadToEnd();
 
-                return output.Split(' ')[1].Split('.')[0]; // 大版本號，如 120
+                using (Process p = Process.Start(psi))
+                {
+                    string output = p.StandardOutput.ReadToEnd();
+                    p.WaitForExit();
+
+                    string[] parts = output.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    return parts.Length > 1 ? parts[1].Trim() : string.Empty;
+                }
             }
             catch
             {
-                return "";
+                return string.Empty;
             }
         }
 
-        private string GetLatestDriverDownloadUrl(string chromeMainVersion)
+        private string GetMatchingDriverDownloadUrl(string chromeVersion)
         {
-            string json = HttpGet(LatestVersionApi);
-            dynamic obj = JsonConvert.DeserializeObject(json);
+            string json = HttpGet(KnownGoodVersionsApi);
+            JObject obj = JObject.Parse(json);
+            JArray versions = obj["versions"] as JArray;
+            if (versions == null)
+                return null;
 
-            foreach (var item in obj.channels.Stable.downloads.chromedriver)
+            JObject matchedVersion = versions
+                .OfType<JObject>()
+                .FirstOrDefault(v => string.Equals(v["version"]?.ToString(), chromeVersion, StringComparison.OrdinalIgnoreCase));
+
+            if (matchedVersion == null)
             {
-                if (item.platform.ToString() == "win64")
-                {
-                    string version = obj.channels.Stable.version;
-                    if (version.ToString().StartsWith(chromeMainVersion))
-                    {
-                        return item.url;
-                    }
-                }
+                string buildPrefix = GetBuildPrefix(chromeVersion);
+                matchedVersion = versions
+                    .OfType<JObject>()
+                    .Where(v => v["version"] != null && v["version"].ToString().StartsWith(buildPrefix + ".", StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(v => ParseVersion(v["version"].ToString()))
+                    .FirstOrDefault();
             }
-            return null;
+
+            return GetPlatformDownloadUrl(matchedVersion, "win64");
         }
 
-        private string GetLastKnownGoodDriverUrl()
+        private string GetPlatformDownloadUrl(JObject versionInfo, string platform)
         {
-            string json = HttpGet(LatestVersionApi);
-            dynamic obj = JsonConvert.DeserializeObject(json);
+            if (versionInfo == null)
+                return null;
 
-            foreach (var item in obj.channels.Stable.downloads.chromedriver)
-            {
-                if (item.platform.ToString() == "win64")
-                {
-                    return item.url;
-                }
-            }
-            return null;
+            JArray downloads = versionInfo.SelectToken("downloads.chromedriver") as JArray;
+            if (downloads == null)
+                return null;
+
+            JObject matchedDownload = downloads
+                .OfType<JObject>()
+                .FirstOrDefault(item => string.Equals(item["platform"]?.ToString(), platform, StringComparison.OrdinalIgnoreCase));
+
+            return matchedDownload?["url"]?.ToString();
+        }
+
+        private string GetBuildPrefix(string version)
+        {
+            if (string.IsNullOrWhiteSpace(version))
+                return string.Empty;
+
+            string[] parts = version.Split('.');
+            if (parts.Length < 3)
+                return version;
+
+            return string.Join(".", parts.Take(3));
+        }
+
+        private Version ParseVersion(string version)
+        {
+            Version parsedVersion;
+            return Version.TryParse(version, out parsedVersion) ? parsedVersion : new Version(0, 0);
         }
 
         private void DownloadAndExtractDriver(string url, string targetPath)
@@ -125,7 +155,9 @@ namespace Lottery539
 
             using (var wc = new WebClient())
             {
-                if (File.Exists(zipPath)) File.Delete(zipPath);
+                if (File.Exists(zipPath))
+                    File.Delete(zipPath);
+
                 wc.DownloadFile(url, zipPath);
             }
 
