@@ -1,4 +1,3 @@
-using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -11,7 +10,8 @@ namespace Lottery539
     {
         private static readonly string ChromeDriverExe = "chromedriver.exe";
         private static readonly string ChromeDriverFolderName = "chromedriver-win64";
-        private static readonly string KnownGoodVersionsApi = "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json";
+        private static readonly string LatestReleaseApi = "https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_";
+        private static readonly string DownloadBaseUrl = "https://storage.googleapis.com/chrome-for-testing-public";
 
         public void UpdateChromDriverFun()
         {
@@ -19,7 +19,9 @@ namespace Lottery539
             string chromeVersion = GetInstalledChromeVersion();
             string driverVersion = GetInstalledDriverVersion(exeDir);
 
-            if (!string.Equals(driverVersion, chromeVersion, StringComparison.OrdinalIgnoreCase))
+            // Chrome for Testing may use a different patch number for the same Chrome build.
+            if (string.IsNullOrWhiteSpace(driverVersion) ||
+                !string.Equals(GetBuildPrefix(driverVersion), GetBuildPrefix(chromeVersion), StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine($"更新 ChromeDriver：{driverVersion} -> {chromeVersion}");
                 KillAllChromeDriverProcesses();
@@ -88,43 +90,14 @@ namespace Lottery539
 
         private string GetMatchingDriverDownloadUrl(string chromeVersion)
         {
-            string json = HttpGet(KnownGoodVersionsApi);
-            JObject obj = JObject.Parse(json);
-            JArray versions = obj["versions"] as JArray;
-            if (versions == null)
+            string buildPrefix = GetBuildPrefix(chromeVersion);
+            string driverVersion = HttpGet(LatestReleaseApi + buildPrefix).Trim();
+            Version parsedVersion;
+            if (!Version.TryParse(driverVersion, out parsedVersion) ||
+                !string.Equals(GetBuildPrefix(driverVersion), buildPrefix, StringComparison.OrdinalIgnoreCase))
                 return null;
 
-            JObject matchedVersion = versions
-                .OfType<JObject>()
-                .FirstOrDefault(v => string.Equals(v["version"]?.ToString(), chromeVersion, StringComparison.OrdinalIgnoreCase));
-
-            if (matchedVersion == null)
-            {
-                string buildPrefix = GetBuildPrefix(chromeVersion);
-                matchedVersion = versions
-                    .OfType<JObject>()
-                    .Where(v => v["version"] != null && v["version"].ToString().StartsWith(buildPrefix + ".", StringComparison.OrdinalIgnoreCase))
-                    .OrderByDescending(v => ParseVersion(v["version"].ToString()))
-                    .FirstOrDefault();
-            }
-
-            return GetPlatformDownloadUrl(matchedVersion, "win64");
-        }
-
-        private string GetPlatformDownloadUrl(JObject versionInfo, string platform)
-        {
-            if (versionInfo == null)
-                return null;
-
-            JArray downloads = versionInfo.SelectToken("downloads.chromedriver") as JArray;
-            if (downloads == null)
-                return null;
-
-            JObject matchedDownload = downloads
-                .OfType<JObject>()
-                .FirstOrDefault(item => string.Equals(item["platform"]?.ToString(), platform, StringComparison.OrdinalIgnoreCase));
-
-            return matchedDownload?["url"]?.ToString();
+            return $"{DownloadBaseUrl}/{driverVersion}/win64/chromedriver-win64.zip";
         }
 
         private string GetBuildPrefix(string version)
@@ -139,12 +112,6 @@ namespace Lottery539
             return string.Join(".", parts.Take(3));
         }
 
-        private Version ParseVersion(string version)
-        {
-            Version parsedVersion;
-            return Version.TryParse(version, out parsedVersion) ? parsedVersion : new Version(0, 0);
-        }
-
         private void DownloadAndExtractDriver(string url, string targetPath)
         {
             string zipPath = Path.Combine(targetPath, "chromedriver.zip");
@@ -153,7 +120,7 @@ namespace Lottery539
             if (Directory.Exists(folderPath))
                 Directory.Delete(folderPath, true);
 
-            using (var wc = new WebClient())
+            using (var wc = new TimeoutWebClient())
             {
                 if (File.Exists(zipPath))
                     File.Delete(zipPath);
@@ -177,10 +144,23 @@ namespace Lottery539
 
         private string HttpGet(string url)
         {
-            using (var wc = new WebClient())
+            using (var wc = new TimeoutWebClient())
             {
                 wc.Headers.Add("User-Agent", "Mozilla/5.0");
                 return wc.DownloadString(url);
+            }
+        }
+
+        private sealed class TimeoutWebClient : WebClient
+        {
+            protected override WebRequest GetWebRequest(Uri address)
+            {
+                WebRequest request = base.GetWebRequest(address);
+                request.Timeout = 15000;
+                HttpWebRequest httpRequest = request as HttpWebRequest;
+                if (httpRequest != null)
+                    httpRequest.ReadWriteTimeout = 15000;
+                return request;
             }
         }
 

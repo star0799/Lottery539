@@ -20,9 +20,33 @@ namespace Lottery539
         public SeleniumChrome()
         {
             string exeDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            ChromeDriverService service = ChromeDriverService.CreateDefaultService(exeDir);
-            service.HideCommandPromptWindow = true;
-            driver = new ChromeDriver(service);
+            driver = StartChrome(exeDir);
+        }
+
+        private IWebDriver StartChrome(string exeDir)
+        {
+            for (int attempt = 1; attempt <= 2; attempt++)
+            {
+                ChromeDriverService service = ChromeDriverService.CreateDefaultService(exeDir);
+                service.HideCommandPromptWindow = true;
+
+                try
+                {
+                    return new ChromeDriver(service, new ChromeOptions(), TimeSpan.FromSeconds(20));
+                }
+                catch (WebDriverException ex)
+                {
+                    service.Dispose();
+                    log.WriteLog($"Chrome 啟動失敗（第 {attempt} 次）: {ex.Message}");
+
+                    if (attempt == 2)
+                        throw new InvalidOperationException("Chrome 無法啟動，已重試一次。原因: " + ex.Message, ex);
+
+                    System.Threading.Thread.Sleep(1000);
+                }
+            }
+
+            throw new InvalidOperationException("Chrome 無法啟動。");
         }
 
         public void LoadData()
@@ -41,10 +65,18 @@ namespace Lottery539
             catch (Exception ex)
             {
                 log.WriteLog(ex.Message);
+                throw;
             }
             finally
             {
-                driver.Quit();
+                try
+                {
+                    driver.Quit();
+                }
+                catch (Exception ex)
+                {
+                    log.WriteLog("Chrome 關閉失敗: " + ex.Message);
+                }
             }
         }
 
@@ -116,10 +148,7 @@ namespace Lottery539
                 var selectElement = new SelectElement(dropdown);
                 selectElement.SelectByText(startDate);
 
-                while (selectElement.SelectedOption.Text != startDate)
-                {
-                    selectElement.SelectByText(startDate);
-                }
+                wait.Until(d => selectElement.SelectedOption.Text == startDate);
 
                 wait.Until(ExpectedConditions.ElementToBeClickable(By.Name("Submit"))).Click();
 
@@ -149,10 +178,12 @@ namespace Lottery539
             catch (WebDriverTimeoutException tex)
             {
                 log.WriteLog("操作超時 : " + tex.Message);
+                throw;
             }
             catch (Exception ex)
             {
                 log.WriteLog("GetData錯誤 : " + ex.Message);
+                throw;
             }
         }
     }

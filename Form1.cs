@@ -23,22 +23,39 @@ namespace Lottery539
             InitializeComponent();
         }
 
-        private void btnUpdate_Click(object sender, EventArgs e)
+        private async void btnUpdate_Click(object sender, EventArgs e)
         {
-            UpdateChromeDriver updateChromDriver = new UpdateChromeDriver();
-            updateChromDriver.UpdateChromDriverFun();
-            log.WriteLog("爬蟲開始...");
+            btnUpdate.Enabled = false;
+            btnUpdate2.Enabled = false;
+            UseWaitCursor = true;
             try
             {
-                SeleniumChrome seleniumChrome = new SeleniumChrome();
-                seleniumChrome.LoadData();
-                log.WriteLog("爬蟲完成!");
+                await Task.Run(() =>
+                {
+                    UpdateChromeDriver updateChromDriver = new UpdateChromeDriver();
+                    updateChromDriver.UpdateChromDriverFun();
+                    log.WriteLog("爬蟲開始...");
+
+                    SeleniumChrome seleniumChrome = new SeleniumChrome();
+                    seleniumChrome.LoadData();
+                    log.WriteLog("爬蟲完成!");
+                });
+
                 MessageBox.Show("資料更新完成");
             }
             catch (Exception ex)
             {
                 log.WriteLog("爬蟲失敗，原因 : " + ex.Message);
                 MessageBox.Show("更新失敗，原因 : " + ex.Message);
+            }
+            finally
+            {
+                if (!IsDisposed)
+                {
+                    UseWaitCursor = false;
+                    btnUpdate.Enabled = true;
+                    btnUpdate2.Enabled = true;
+                }
             }
         }
 
