@@ -15,14 +15,34 @@ namespace Lottery539
         string fileName = "Lottery";
         public void WriteData(List<LotteryData> data)
         {
+            if (data == null || data.Count == 0)
+                return;
+
             string FileName = Path.Combine(path, fileName + ".txt");
             if (!File.Exists(FileName))
             {
                 File.Create(FileName).Close();
             }
             List<string> existingLines = File.ReadAllLines(FileName).ToList();
-            List<string> newDataLines = FormatDataFile(data);
-            existingLines.InsertRange(0, newDataLines);
+            Dictionary<string, LotteryData> updates = data
+                .GroupBy(item => item.Issue)
+                .ToDictionary(group => group.Key, group => group.Last());
+
+            for (int index = 0; index < existingLines.Count; index++)
+            {
+                string issue = existingLines[index].Split(':')[0];
+                LotteryData update;
+                if (!updates.TryGetValue(issue, out update))
+                    continue;
+
+                existingLines[index] = FormatDataFile(new List<LotteryData> { update })[0];
+                updates.Remove(issue);
+            }
+
+            List<LotteryData> additions = updates.Values
+                .OrderByDescending(item => Convert.ToInt64(item.Issue))
+                .ToList();
+            existingLines.InsertRange(0, FormatDataFile(additions));
             File.WriteAllLines(FileName, existingLines);
         }
         public List<string> FormatDataFile(List<LotteryData> data)
