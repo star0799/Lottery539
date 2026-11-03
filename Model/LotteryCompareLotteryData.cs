@@ -14,5 +14,8 @@ namespace Lottery539.Model
         public string NextNumbers { get; set; }
         public List<LotteryData> BenchmarDatas { get; set; } = new List<LotteryData>();
         public List<LotteryData> Datas { get; set; } = new List<LotteryData>();
+        public int CandidateStartIndex { get; set; } = -1;
+        public int BenchmarkStartIndex { get; set; } = -1;
+        public int Range { get; set; }
     }
 }
