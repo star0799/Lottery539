@@ -18,38 +18,47 @@ namespace Lottery539
         {
             try
             {
-                string downloadUrl;
-                bool updateAvailable = UpdateLottery539.IsUpdate(out downloadUrl);
-
-                if (updateAvailable)
+                bool enableAppAutoUpdate;
+                bool.TryParse(Helpers.GetConfigValue("EnableAppAutoUpdate"), out enableAppAutoUpdate);
+                if (enableAppAutoUpdate)
                 {
-                    // Move all files (excluding directories) from the original directory to the temporary directory
-                    string[] filesToMove = Directory.GetFiles(filePath);
-                    foreach (string fileToMove in filesToMove)
+                    string downloadUrl;
+                    bool updateAvailable = UpdateLottery539.IsUpdate(out downloadUrl);
+
+                    if (updateAvailable)
                     {
-                        //資料檔不重製
-                        if (continueFiles.Contains(Path.GetFileName(fileToMove)))
-                            continue;
-                        string fileName = Path.GetFileName(fileToMove);
-                        string tempFilePathForFile = Path.Combine(Path.GetTempPath(), fileName);
-                        if (File.Exists(tempFilePathForFile))
+                        // Move all files (excluding directories) from the original directory to the temporary directory
+                        string[] filesToMove = Directory.GetFiles(filePath);
+                        foreach (string fileToMove in filesToMove)
                         {
-                            File.Delete(tempFilePathForFile);
+                            //資料檔不重製
+                            if (continueFiles.Contains(Path.GetFileName(fileToMove)))
+                                continue;
+                            string fileName = Path.GetFileName(fileToMove);
+                            string tempFilePathForFile = Path.Combine(Path.GetTempPath(), fileName);
+                            if (File.Exists(tempFilePathForFile))
+                            {
+                                File.Delete(tempFilePathForFile);
+                            }
+                            File.Move(fileToMove, tempFilePathForFile);
                         }
-                        File.Move(fileToMove, tempFilePathForFile);
+
+                        UpdateLottery539.DownloadFileAsync(downloadUrl, filePath);
+
+                        UpdateLottery539.MoveAndReplaceFiles();
+
+                        // Schedule commands to be executed after a delay
+                        string tempFilePath = Path.Combine(Path.GetTempPath(), "Lottery539_temp.exe");
+                        ScheduleCommands(tempFilePath);
+                        log.WriteLog("更新應用程式完成!");
+                        // Exit the main application
+                        Application.Exit();
+                        return;
                     }
-
-                    UpdateLottery539.DownloadFileAsync(downloadUrl, filePath);
-
-                    UpdateLottery539.MoveAndReplaceFiles();
-
-                    // Schedule commands to be executed after a delay
-                    string tempFilePath = Path.Combine(Path.GetTempPath(), "Lottery539_temp.exe");
-                    ScheduleCommands(tempFilePath);
-                    log.WriteLog("更新應用程式完成!");
-                    // Exit the main application
-                    Application.Exit();
-                    return;
+                }
+                else
+                {
+                    log.WriteLog("程式自動更新已停用。");
                 }
             }
             catch (Exception ex)
